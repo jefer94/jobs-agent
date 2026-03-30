@@ -1,0 +1,27 @@
+# Sessions / credentials
+.sessions/
+
+# Generated output
+generated-cvs/
+
+# Data files
+data/
+
+# Sensitive docs
+docs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+.agents/
+
+# Misc
+.env
+*.log

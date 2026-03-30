@@ -126,6 +126,17 @@ Every job application follows this sequence:
 
 ---
 
+### cv-builder
+**Source:** `claude-office-skills/skills` · installed via `npx skills add`
+
+**Activate when:** user asks to generate a professionally formatted CV/resume as a PDF, or needs a structured YAML-driven CV with multiple themes.
+
+**How it works:** Define CV content as a `rendercv` YAML file, then render to PDF with `rendercv render cv.yaml`. Output goes to `rendercv_output/`. Available themes: `classic`, `sb2nov`, `moderncv`, `engineeringresumes`.
+
+**Output:** `generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.yaml` → rendered to PDF via `rendercv`.
+
+---
+
 ### create-skill
 **Source:** `siviter-xyz/dot-agent`
 
