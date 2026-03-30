@@ -31,13 +31,15 @@ See `references/job-sites.md` for login URLs, selectors, and quirks per site.
 ```
 Task Progress:
 - [ ] 1. Read CV from docs/ to extract skills, role, and keywords
-- [ ] 2. Open Chrome via Playwright (chromium, headful)
-- [ ] 3. Log into target site (load saved session or credentials from .env)
-- [ ] 4. Search with Spanish keywords derived from CV
-- [ ] 5. Filter: language=Spanish, location=Chile, posted=last 7 days
-- [ ] 6. Score each offer against CV (relevance check)
-- [ ] 7. For relevant offers: open, verify Spanish language, apply
-- [ ] 8. Log application to tracking store (see tracking-applications skill)
+- [ ] 2. Prompt user for credentials at startup (see Credentials section)
+- [ ] 3. Open one browser context per portal in parallel (see Browser Setup)
+- [ ] 4. Log into each portal — use Google/LinkedIn OAuth where available
+- [ ] 5. Search all portals simultaneously with Spanish keywords from CV
+- [ ] 6. Filter: language=Spanish, location=Chile, posted=last 7 days
+- [ ] 7. Score each offer against CV (relevance check)
+- [ ] 8. For relevant offers: open offer page (max 1 per portal at a time), verify Spanish, apply
+- [ ] 9. Close offer page before opening the next one on that portal
+- [ ] 10. Log application to tracking store (see tracking-applications skill)
 ```
 
 ## Key Rules
@@ -49,28 +51,54 @@ Task Progress:
 
 ## Browser Setup
 
-Use Playwright with `chromium` in **headed mode** (`headless: false`) so the user can observe and intervene.
+Use Playwright with `chromium` in **headed mode** (`headless: False`). Open **one persistent browser context per portal** so all portals run in parallel. Each context keeps **at most 1 job offer page open at a time** to avoid bot detection.
 
 ```python
 from playwright.sync_api import sync_playwright
+import threading
+
+PORTALS = ["linkedin", "trabajando", "laborum", "getonbrd", "computrabajo", "indeed"]
+
+def run_portal(portal_name, creds, browser):
+    session_path = f".sessions/{portal_name}.json"
+    ctx = browser.new_context(
+        storage_state=session_path if os.path.exists(session_path) else None
+    )
+    # login → search → apply loop (max 1 offer page open at a time)
+    ...
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=False, args=["--start-maximized"])
-    context = browser.new_context(storage_state=".sessions/session.json")
-    page = context.new_page()
+    threads = [threading.Thread(target=run_portal, args=(name, creds, browser))
+               for name in PORTALS]
+    for t in threads: t.start()
+    for t in threads: t.join()
 ```
 
-Save session state after login to `.sessions/session.json` to avoid re-logging every run.
+Save each portal's session to `.sessions/{portal}.json` after login to skip re-login on next run.
 
 ## Credentials
 
-Store credentials in `.env` (never hardcode):
+**Never read credentials from `.env` or any file** — the AI could read and leak them.
+
+At startup, prompt the user interactively for each site's password. Credentials live only in memory for the session duration:
+
+```python
+import getpass
+
+def prompt_credentials():
+    print("Enter credentials (input is hidden):")
+    creds = {}
+    for site in ["trabajando", "laborum", "getonbrd", "computrabajo", "indeed"]:
+        creds[site] = {
+            "password": getpass.getpass(f"  {site} password: ")
+        }
+    return creds
 ```
-LINKEDIN_EMAIL=
-LINKEDIN_PASSWORD=
-TRABAJANDO_EMAIL=
-TRABAJANDO_PASSWORD=
-```
+
+- **LinkedIn and Google:** use OAuth sign-in with `jdefreitaspinto@gmail.com` — no password prompt needed for those
+- Session cookies saved to `.sessions/` skip re-login until the session expires
+- If a saved session is still valid, no prompt is shown for that portal
 
 ## References
 

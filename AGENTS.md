@@ -25,8 +25,7 @@ This is a single-user automation bot (not a product). It:
 docs/               — Base CV (Espanol.pdf) and title certificate (titulo.pdf)
 generated-cvs/      — Tailored CVs per application ({empresa}-{cargo}-{date}.md)
 data/               — applications.json · qa-log.json · metrics.json
-.sessions/          — Saved browser session cookies (gitignored)
-.env                — Job site credentials (never commit)
+.sessions/          — Saved browser session cookies per portal (gitignored)
 ```
 
 ---
@@ -38,15 +37,10 @@ pip install playwright pdfplumber pypdf langdetect reportlab
 playwright install chromium
 ```
 
-Create `.env` with credentials for each site:
-```
-LINKEDIN_EMAIL=
-LINKEDIN_PASSWORD=
-TRABAJANDO_EMAIL=
-TRABAJANDO_PASSWORD=
-LABORUM_EMAIL=
-LABORUM_PASSWORD=
-```
+**No credentials file.** At startup the bot prompts for site passwords interactively via `getpass` — passwords live in memory only for the session and are never written to disk.
+
+- **LinkedIn + Google Jobs:** sign in via Google OAuth as `jdefreitaspinto@gmail.com` — no password prompt
+- **All other sites:** prompted once at startup; skipped if `.sessions/{portal}.json` is still valid
 
 Initialize data folder on first run — the `tracking-applications` skill includes a bootstrap script.
 
@@ -57,11 +51,13 @@ Initialize data folder on first run — the `tracking-applications` skill includ
 Every job application follows this sequence:
 
 ```
-1. browsing-job-sites  →  find relevant Spanish offers on Chilean portals
-2. tracking-applications  →  check for duplicates before proceeding
-3. editing-cvs + pdf  →  extract base CV, tailor for the specific offer
-4. browsing-job-sites  →  fill and submit the application form
-5. tracking-applications  →  log the application and any form Q&A
+1. browsing-job-sites  →  prompt credentials at startup (once per session)
+2. browsing-job-sites  →  open one browser context per portal, all in parallel
+3. browsing-job-sites  →  search all portals simultaneously for Spanish offers
+4. tracking-applications  →  check for duplicates before proceeding on each offer
+5. editing-cvs + pdf  →  extract base CV, tailor for the specific offer
+6. browsing-job-sites  →  open offer page (max 1 per portal), apply, close page
+7. tracking-applications  →  log the application and any form Q&A
 ```
 
 ---
@@ -73,7 +69,10 @@ Every job application follows this sequence:
 - **No invented experience** — CV tailoring only reorders and emphasizes truthfully
 - **Headed browser** — always `headless=False` so the user can observe and intervene
 - **CAPTCHA** — stop, surface the page to the user, and wait for manual resolution
-- **Credentials** — read exclusively from `.env`; never hardcode
+- **Credentials** — prompted interactively at startup via `getpass`; never read from files, never hardcoded; AI must not store or log passwords
+- **OAuth** — LinkedIn and Google sign-in use Google OAuth with `jdefreitaspinto@gmail.com`
+- **Parallel portals** — one browser context per portal, all running simultaneously
+- **1 offer page per portal** — open, apply/skip, close before opening the next — reduces bot detection risk
 
 ---
 
