@@ -126,6 +126,17 @@ Every job application follows this sequence:
 
 ---
 
+### verify-cv
+**Source:** custom (`.agents/skills/verify-cv/`)
+
+**Activate when:** immediately after any CV PDF is generated (editing-cvs, cv-builder, or pdf skill). Always run before logging an application.
+
+**How it works:** Opens the PDF via `mcp4_browser_navigate file:///<path>`, screenshots each page with `mcp4_browser_take_screenshot`, and visually inspects for: text overlap, clipping, multi-page overflow, missing sections, Unicode encoding boxes. Applies targeted fixes and re-renders if issues are found.
+
+**Reports:** `✅ PASS` / `⚠️ FIXED` / `❌ FAIL` per CV file.
+
+---
+
 ### cv-builder
 **Source:** `claude-office-skills/skills` · installed via `npx skills add`
 

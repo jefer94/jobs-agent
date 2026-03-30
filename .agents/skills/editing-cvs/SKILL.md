@@ -51,13 +51,32 @@ with pdfplumber.open("docs/Espanol.pdf") as pdf:
 
 ## Output Format
 
-Save generated CVs as Markdown first (easier to edit), then convert to PDF if needed:
+Save generated CVs as Markdown first (easier to edit), then convert to PDF:
 
 ```
 generated-cvs/
   {empresa}-{cargo}-{YYYY-MM-DD}.md
-  {empresa}-{cargo}-{YYYY-MM-DD}.pdf  (optional)
+  {empresa}-{cargo}-{YYYY-MM-DD}.pdf
 ```
+
+## Convert Markdown → PDF
+
+Use `md_to_pdf.py` at the project root (requires `reportlab`):
+
+```bash
+# Convert all .md files in a folder to PDF (enforces 1-page automatically)
+uv run --with reportlab md_to_pdf.py generated-cvs/
+
+# Drop optional sections to save space (e.g., Idiomas, Resumen)
+uv run --with reportlab md_to_pdf.py generated-cvs/ --skip-sections "Idiomas,Resumen"
+```
+
+**Heading format** (the converter parses these lines after the H1 name):
+- Items separated by `·` (U+00B7)
+- URLs are auto-detected and shown with icons — never write full `https://` URLs
+- Blog/website: write bare domain only (`jefer94.dev`)
+- GitHub: write `github.com/jefer94` (auto-shortened to `github/jefer94` with ⊙ icon)
+- LinkedIn: write `linkedin.com/in/jefer94` (auto-shortened to `li/jefer94`)
 
 ## References
 
