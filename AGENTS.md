@@ -24,7 +24,7 @@ This is a single-user automation bot (not a product). It:
 ```
 docs/               — Base CV (Espanol.pdf) and title certificate (titulo.pdf)
 generated-cvs/      — Tailored CVs per application ({empresa}-{cargo}-{date}.md)
-data/               — applications.json · qa-log.json · metrics.json
+data/               — applications.json · qa-log.json · metrics.json · qa-answers.tsv
 .sessions/          — Saved browser session cookies per portal (gitignored)
 ```
 
@@ -40,7 +40,7 @@ playwright install chromium
 **No credentials file.** At startup the bot prompts for site passwords interactively via `getpass` — passwords live in memory only for the session and are never written to disk.
 
 - **LinkedIn + Google Jobs:** sign in via Google OAuth as `jdefreitaspinto@gmail.com` — no password prompt
-- **All other sites:** prompted once at startup; skipped if `.sessions/{portal}.json` is still valid
+- **All other sites:** asked in chat once at startup; skipped if `.sessions/{portal}.json` is still valid
 
 Initialize data folder on first run — the `tracking-applications` skill includes a bootstrap script.
 
@@ -57,7 +57,8 @@ Every job application follows this sequence:
 4. tracking-applications  →  check for duplicates before proceeding on each offer
 5. editing-cvs + pdf  →  extract base CV, tailor for the specific offer
 6. browsing-job-sites  →  open offer page (max 1 per portal), apply, close page
-7. tracking-applications  →  log the application and any form Q&A
+7. answering-forms      →  for each form question: search Engram, use TSV answer or generate new one
+8. tracking-applications  →  log the application and any form Q&A
 ```
 
 ---
@@ -102,6 +103,17 @@ Every job application follows this sequence:
 **Activate when:** a job offer needs a tailored CV, or user asks to generate or adapt the CV for a specific role.
 
 **Output:** `generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.md`. Uses the `pdf` skill to extract text from `docs/Espanol.pdf`. See `references/cv-guidelines.md` for Chilean CV structure and keyword-matching strategy.
+
+---
+
+### answering-forms
+**Source:** custom (`.agents/skills/answering-forms/`)
+
+**Activate when:** a job application form presents a question that needs an answer.
+
+**How it works:** Searches Engram (`mcp3_mem_search`) for semantically similar past questions first. Falls back to `data/qa-answers.tsv` for a direct match, then generates a new answer from CV context. Saves every new Q&A to both the TSV (editable by user) and Engram memory (for future semantic matching).
+
+**TSV:** `data/qa-answers.tsv` — tab-separated columns: `question · answer · context · updated`. Edit this file to change default answers at any time.
 
 ---
 

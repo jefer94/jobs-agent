@@ -51,28 +51,31 @@ Task Progress:
 
 ## Browser Setup
 
-Use Playwright with `chromium` in **headed mode** (`headless: False`). Open **one persistent browser context per portal** so all portals run in parallel. Each context keeps **at most 1 job offer page open at a time** to avoid bot detection.
+Use the **Playwright MCP tools** (`mcp4_browser_*`) — do NOT write Python Playwright code. The MCP server controls a single headed Chrome instance. Open **one tab per portal** and switch between them with `mcp4_browser_tabs`.
 
-```python
-from playwright.sync_api import sync_playwright
-import threading
+### Open tabs for each portal
+```
+1. mcp4_browser_tabs action=new  → linkedin tab (index 0)
+2. mcp4_browser_tabs action=new  → trabajando tab (index 1)
+3. mcp4_browser_tabs action=new  → laborum tab (index 2)
+4. mcp4_browser_tabs action=new  → getonbrd tab (index 3)
+5. mcp4_browser_tabs action=new  → computrabajo tab (index 4)
+6. mcp4_browser_tabs action=new  → indeed tab (index 5)
+```
 
-PORTALS = ["linkedin", "trabajando", "laborum", "getonbrd", "computrabajo", "indeed"]
-
-def run_portal(portal_name, creds, browser):
-    session_path = f".sessions/{portal_name}.json"
-    ctx = browser.new_context(
-        storage_state=session_path if os.path.exists(session_path) else None
-    )
-    # login → search → apply loop (max 1 offer page open at a time)
-    ...
-
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=False, args=["--start-maximized"])
-    threads = [threading.Thread(target=run_portal, args=(name, creds, browser))
-               for name in PORTALS]
-    for t in threads: t.start()
-    for t in threads: t.join()
+### Per-portal loop (repeat for each tab)
+```
+1. mcp4_browser_tabs action=select index={n}
+2. Login (OAuth or typed credentials — see Credentials)
+3. mcp4_browser_navigate to search URL with CV keywords
+4. mcp4_browser_snapshot  → scan offer cards
+5. For each offer:
+   a. mcp4_browser_click  → open offer (max 1 at a time)
+   b. mcp4_browser_snapshot  → read description, verify Spanish
+   c. If Spanish + relevant: apply (fill form, click submit)
+   d. mcp4_browser_tabs action=close current offer tab (if opened in new tab)
+   e. Wait 3-5s before next offer
+6. mcp4_browser_evaluate → save session cookies to .sessions/{portal}.json
 ```
 
 Save each portal's session to `.sessions/{portal}.json` after login to skip re-login on next run.
@@ -81,24 +84,21 @@ Save each portal's session to `.sessions/{portal}.json` after login to skip re-l
 
 **Never read credentials from `.env` or any file** — the AI could read and leak them.
 
-At startup, prompt the user interactively for each site's password. Credentials live only in memory for the session duration:
+At startup, **ask the user in chat** for each site's password before opening any tabs. Passwords live only in the conversation context — never write them to a file or log them.
 
-```python
-import getpass
-
-def prompt_credentials():
-    print("Enter credentials (input is hidden):")
-    creds = {}
-    for site in ["trabajando", "laborum", "getonbrd", "computrabajo", "indeed"]:
-        creds[site] = {
-            "password": getpass.getpass(f"  {site} password: ")
-        }
-    return creds
+Prompt sequence (only ask for sites whose `.sessions/{portal}.json` does not exist or is expired):
+```
+"Para comenzar necesito tus contraseñas. Escríbelas una por una:"
+→ Trabajando.cl password:
+→ Laborum.cl password:
+→ GetOnBoard password:
+→ CompuTrabajo password:
+→ Indeed password:
 ```
 
-- **LinkedIn and Google:** use OAuth sign-in with `jdefreitaspinto@gmail.com` — no password prompt needed for those
+- **LinkedIn and Google:** use OAuth sign-in with `jdefreitaspinto@gmail.com` — no password prompt needed
 - Session cookies saved to `.sessions/` skip re-login until the session expires
-- If a saved session is still valid, no prompt is shown for that portal
+- If a saved session is still valid, skip the prompt for that portal
 
 ## References
 

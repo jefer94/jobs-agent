@@ -1,0 +1,30 @@
+# Sensitive data — never include in image
+.sessions/
+.env
+docs/
+data/
+
+# Generated output
+generated-cvs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Agent skills / tooling
+.agents/
+node_modules/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
