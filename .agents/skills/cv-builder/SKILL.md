@@ -187,16 +187,39 @@ cv:
         details: Tech1, Tech2, Tech3
 
 design:
-  theme: ink  # ink, classic, sb2nov, moderncv, engineeringresumes
+  theme: ink-custom  # ink-custom (DEFAULT), ink, classic, sb2nov, moderncv, engineeringresumes
 ```
 
 ### Contact Format Rules
 
-- **Phone: always include country code** — write `+56951451665` (easier to read than `+56951451665`)
+- **Phone: always include country code** — write `+56951451665` without spaces
 - **Social networks:** use usernames only — `jefer94`, `@jefer.dfp` for Medium (not full URLs)
 - **Icons:** rendercv themes display icons automatically for known networks (LinkedIn, GitHub, Medium)
 - **Email:** standard format
 - **Compact format:** Icons communicate same info with less space (no full URLs)
+
+**Phone Number Without Spaces:**
+
+rendercv's `international` format adds spaces (e.g., `+56 9 5145 1665`). To display phone without spaces, use `custom_connections` instead of the `phone` field:
+
+```yaml
+cv:
+  location: Santiago, Chile
+  email: jdefreitaspinto@gmail.com
+  # Do NOT use phone field - it adds spaces
+  social_networks:
+    - network: LinkedIn
+      username: jefer94
+    - network: GitHub
+      username: jefer94
+  custom_connections:
+    - placeholder: "+56951451665"
+      url: "tel:+56951451665"
+      fontawesome_icon: phone
+    - placeholder: "@jefer.dfp"
+      url: https://medium.com/@jefer.dfp
+      fontawesome_icon: medium
+```
 
 **Custom Connections Workaround:**
 
@@ -219,7 +242,8 @@ Available FontAwesome icons: `medium`, `globe`, `calendar-days`, `twitter`, `you
 
 ### Available Themes
 
-- `ink` — **DEFAULT** modern, minimal design with icons, clean typography
+- `ink-custom` — **DEFAULT** custom ink variant with no footer/top, icons, dot separator
+- `ink` — modern, minimal design with icons, clean typography
 - `engineeringresumes` — technical/engineering focused, plain layout (no columns), supports colors and icons
 - `classic` — clean, professional, good for most applications
 - `sb2nov` — academic/research focused
@@ -227,7 +251,7 @@ Available FontAwesome icons: `medium`, `globe`, `calendar-days`, `twitter`, `you
 
 ### Design Options
 
-**Theme:** Use `ink` by default — modern, minimal design with icons and clean typography.
+**Theme:** Use `ink-custom` by default — no footer/top content, icons enabled, dot separator.
 
 **Name Formatting:**
 - Use standard font (not decorative) for professional appearance
