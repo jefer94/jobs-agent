@@ -1,0 +1,99 @@
+# Master CV — personal source of truth for CV generation.
+# Copy this file to master-cv.yaml and fill in your own data.
+# master-cv.yaml is gitignored; this example file is tracked.
+#
+# Personal contact values come from data/profile.tsv.
+# Run: cp data/profile.example.tsv data/profile.tsv  (then fill in values)
+
+cv:
+  name: "Your Full Name"              # full_name from data/profile.tsv
+  location: "City, Country"           # location from data/profile.tsv
+  email: "your.email@gmail.com"       # email from data/profile.tsv
+  phone: "+10000000000"               # phone from data/profile.tsv
+  social_networks:
+    - network: LinkedIn
+      username: your-linkedin          # linkedin from data/profile.tsv
+    - network: GitHub
+      username: your-github            # github from data/profile.tsv
+    - network: Medium
+      username: "@your-medium"         # medium from data/profile.tsv
+
+  sections:
+    # ----------------------------------------------------------
+    # PERFIL / PROFILE
+    # ----------------------------------------------------------
+    perfil:
+      - "One-paragraph professional summary. Write in the target CV language."
+
+    # ----------------------------------------------------------
+    # EXPERIENCIA PROFESIONAL / PROFESSIONAL EXPERIENCE
+    # ----------------------------------------------------------
+    experiencia:
+      - company: Company Name
+        position: Job Title
+        location: City, Country (Remote/On-site)
+        start_date: YYYY-MM
+        end_date: YYYY-MM   # or "present"
+        highlights:
+          - "Key achievement or responsibility with metrics where possible"
+          - "Another key bullet point"
+
+    # ----------------------------------------------------------
+    # PROYECTOS PERSONALES / PERSONAL PROJECTS
+    # ----------------------------------------------------------
+    proyectos:
+      - name: Project Name
+        date: YYYY
+        highlights:
+          - "What you built and key technical decisions"
+          - "Stack, scale, metrics (commits, users, forks)"
+
+    # ----------------------------------------------------------
+    # PUBLICACIONES / PUBLICATIONS
+    # ----------------------------------------------------------
+    publicaciones:
+      - "**\"Article Title\"** — Platform, Month YYYY · Brief description"
+
+    # ----------------------------------------------------------
+    # CONTRIBUCIONES OPEN SOURCE / OPEN SOURCE CONTRIBUTIONS
+    # ----------------------------------------------------------
+    open_source:
+      - "**package-name** (registry, license) — What it does. Install: package-manager install package-name"
+
+    # ----------------------------------------------------------
+    # HABILIDADES / SKILLS
+    # ----------------------------------------------------------
+    habilidades:
+      - label: Languages
+        details: TypeScript, Python, JavaScript, SQL
+      - label: Frontend
+        details: React, Next.js, Tailwind CSS
+      - label: Backend
+        details: Node.js, Django, FastAPI
+      - label: Databases
+        details: PostgreSQL, Redis
+      - label: Cloud & Infrastructure
+        details: AWS, Docker, Terraform
+      - label: Testing
+        details: Jest, Pytest, Cypress
+      - label: DevOps
+        details: GitHub Actions, CI/CD
+
+    # ----------------------------------------------------------
+    # EDUCACION / EDUCATION
+    # ----------------------------------------------------------
+    educacion:
+      - institution: University Name
+        area: Degree Field
+        start_date: YYYY
+        end_date: YYYY
+
+    # ----------------------------------------------------------
+    # IDIOMAS / LANGUAGES
+    # ----------------------------------------------------------
+    idiomas:
+      - "**Spanish** — Native"
+      - "**English** — B2"
+
+design:
+  theme: ink-custom

@@ -5,7 +5,7 @@ Login flows, search selectors, and apply patterns per site.
 ## LinkedIn
 
 - **Login URL:** https://www.linkedin.com/login
-- **OAuth:** Click "Iniciar sesión con Google" → sign in as `jdefreitaspinto@gmail.com`
+- **OAuth:** Click "Iniciar sesión con Google" → sign in as `{oauth_email from data/profile.tsv}`
 - **Search URL:** https://www.linkedin.com/jobs/search/?keywords={query}&location=Chile&f_TPR=r604800
 - **Language filter:** Add `&f_LL=es` for Spanish postings
 - **Apply button:** `button[aria-label="Solicitar empleo"]` or `button[aria-label="Solicitud sencilla"]`
@@ -18,7 +18,7 @@ Login flows, search selectors, and apply patterns per site.
 1. Check .sessions/linkedin.json — if valid, skip login
 2. Otherwise: navigate to login page
 3. Click "Continuar con Google"
-4. Select or type jdefreitaspinto@gmail.com
+4. Select or type `{oauth_email from data/profile.tsv}`
 5. Complete Google OAuth flow
 6. Save context storage state to .sessions/linkedin.json
 ```
@@ -82,8 +82,8 @@ Login flows, search selectors, and apply patterns per site.
 ## Google Jobs
 
 - **Search URL:** https://www.google.com/search?q={query}+trabajo+Chile&ibp=htl;jobs
-- **Login:** Sign in to Google as `jdefreitaspinto@gmail.com` before searching (unlocks saved jobs and personalised results)
-- **OAuth flow:** Navigate to accounts.google.com → sign in with `jdefreitaspinto@gmail.com` → save session to `.sessions/google.json`
+- **Login:** Sign in to Google as `{oauth_email from data/profile.tsv}` before searching (unlocks saved jobs and personalised results)
+- **OAuth flow:** Navigate to accounts.google.com → sign in with `{oauth_email from data/profile.tsv}` → save session to `.sessions/google.json`
 - Scrape job cards from Google's jobs panel
 - Each card links to the original site — follow link and apply there
 - **Selector:** `div[data-ved] .BjJfJf` for job titles in the panel

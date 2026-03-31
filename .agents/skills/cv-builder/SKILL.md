@@ -66,17 +66,17 @@ Reads the base CV from `docs/` and generates a tailored version for a specific j
 
 ## Source Files
 
-- `docs/Espanol.pdf` — base CV in Spanish (primary source for content extraction)
+- `.agents/skills/cv-builder/master-cv.yaml` — **primary source of truth** for all CV content (gitignored; see `master-cv.example.yaml` for structure)
+- `docs/Espanol.pdf` — rendered reference copy (fallback if master-cv.yaml is unavailable)
 - `docs/titulo.pdf` — professional title/certificate (attach when required)
 - `data/headings.tsv` — canonical section labels (ES/EN) and formatting rules
-- `/home/jefer/dev/` — scan for professional experiences and projects when tailoring
 - Generated CVs are saved to the `generated-cvs/` folder as `.yaml` + `.pdf`
 
 ## Workflow
 
 ```
 Task Progress:
-- [ ] 1. Extract text from docs/Espanol.pdf using pdfplumber (reference only)
+- [ ] 1. Read `.agents/skills/cv-builder/master-cv.yaml` for full CV content (fallback: extract docs/Espanol.pdf with pdfplumber)
 - [ ] 2. Parse the job offer: role, required skills, keywords, company
 - [ ] 3. Identify matching skills and experience from the CV
 - [ ] 4. Reorder/emphasize relevant sections to match the offer
@@ -149,19 +149,21 @@ Reusing the same bullets in two places sends a confusing signal to the recruiter
 
 ## YAML Structure for rendercv
 
+> **Personal values:** read `data/profile.tsv` for name, email, phone, location, and social handles.
+
 ```yaml
 cv:
-  name: Jeferson José De Freitas Pinto
-  location: Santiago, Chile
-  email: jdefreitaspinto@gmail.com
-  phone: "+56951451665"  # Always include country code
+  name: "{full_name}"           # from data/profile.tsv
+  location: "{location}"        # from data/profile.tsv
+  email: "{email}"              # from data/profile.tsv
+  phone: "{phone}"              # from data/profile.tsv — always include country code
   social_networks:
     - network: LinkedIn
-      username: jefer94
+      username: "{linkedin}"    # from data/profile.tsv
     - network: GitHub
-      username: jefer94
+      username: "{github}"      # from data/profile.tsv
     - network: Medium
-      username: "@jefer.dfp"
+      username: "{medium}"      # from data/profile.tsv
 
   sections:
     summary:
@@ -191,37 +193,37 @@ cv:
         details: Tech1, Tech2, Tech3
 
 design:
-  theme: ink-custom  # ink-custom (DEFAULT), ink, classic, sb2nov, moderncv, engineeringresumes
+  theme: classic  # Overrides applied via design.yaml at project root
 ```
 
 ### Contact Format Rules
 
-- **Phone: always include country code** — write `+56951451665` without spaces
-- **Social networks:** use usernames only — `jefer94`, `@jefer.dfp` for Medium (not full URLs)
+- **Phone: always include country code** — write `{phone}` from `data/profile.tsv` without spaces
+- **Social networks:** use usernames only — `{linkedin}`, `{medium}` from `data/profile.tsv` (not full URLs)
 - **Icons:** rendercv themes display icons automatically for known networks (LinkedIn, GitHub, Medium)
 - **Email:** standard format
 - **Compact format:** Icons communicate same info with less space (no full URLs)
 
 **Phone Number Without Spaces:**
 
-rendercv's `international` format adds spaces (e.g., `+56 9 5145 1665`). To display phone without spaces, use `custom_connections` instead of the `phone` field:
+rendercv's `international` format adds spaces. To display phone without spaces, use `custom_connections` instead of the `phone` field:
 
 ```yaml
 cv:
-  location: Santiago, Chile
-  email: jdefreitaspinto@gmail.com
+  location: "{location}"        # from data/profile.tsv
+  email: "{email}"              # from data/profile.tsv
   # Do NOT use phone field - it adds spaces
   social_networks:
     - network: LinkedIn
-      username: jefer94
+      username: "{linkedin}"    # from data/profile.tsv
     - network: GitHub
-      username: jefer94
+      username: "{github}"      # from data/profile.tsv
   custom_connections:
-    - placeholder: "+56951451665"
-      url: "tel:+56951451665"
+    - placeholder: "{phone}"    # from data/profile.tsv
+      url: "tel:{phone}"
       fontawesome_icon: phone
-    - placeholder: "@jefer.dfp"
-      url: https://medium.com/@jefer.dfp
+    - placeholder: "{medium}"   # from data/profile.tsv
+      url: https://medium.com/{medium}
       fontawesome_icon: medium
 ```
 
@@ -233,12 +235,12 @@ For social networks not natively supported by rendercv (like Medium), use `custo
 cv:
   social_networks:
     - network: LinkedIn
-      username: jefer94
+      username: "{linkedin}"    # from data/profile.tsv
     - network: GitHub
-      username: jefer94
+      username: "{github}"      # from data/profile.tsv
   custom_connections:
     - placeholder: Medium
-      url: https://medium.com/@jefer.dfp
+      url: https://medium.com/{medium}
       fontawesome_icon: medium
 ```
 
@@ -246,21 +248,19 @@ Available FontAwesome icons: `medium`, `globe`, `calendar-days`, `twitter`, `you
 
 ### Available Themes
 
-- `ink-custom` — **DEFAULT** custom ink variant with no footer/top, icons, dot separator
-- `ink` — modern, minimal design with icons, clean typography
-- `engineeringresumes` — technical/engineering focused, plain layout (no columns), supports colors and icons
-- `classic` — clean, professional, good for most applications
+- `classic` — **DEFAULT**, see `design.yaml` at project root for active overrides (no footer/top, `•` separator, icons)
+- `engineeringresumes` — technical/engineering focused, plain layout (no columns)
 - `sb2nov` — academic/research focused
 - `moderncv` — traditional European style
 
 ### Design Options
 
-**Theme:** Use `ink-custom` by default — no footer/top content, icons enabled, dot separator.
+**Theme:** Use `classic` with overrides from `design.yaml` — no footer/top, `•` separator, icons enabled. Edit `design.yaml` to change theme or add overrides.
 
 **Name Formatting:**
 - Use standard font (not decorative) for professional appearance
 - Keep name size proportional (18-22pt), not oversized
-- Full name: "Jeferson José De Freitas Pinto"
+- Full name: read from `data/profile.tsv` → `full_name`
 
 **Skills Layout:**
 - Use **plain list format** (no columns)
@@ -294,19 +294,33 @@ generated-cvs/
   {empresa}-{cargo}-{YYYY-MM-DD}.pdf
 ```
 
+## File Locations
+
+| File | Path | Tracked |
+|------|------|---------|
+| Personal CV source of truth | `.agents/skills/cv-builder/master-cv.yaml` | ❌ gitignored |
+| Design / theme config | `design.yaml` (project root) | ✅ tracked |
+| Generated tailored CVs | `generated-cvs/{empresa}-{cargo}-{date}.yaml` | ❌ gitignored |
+
 ## CLI Usage
 
 ```bash
 # Install rendercv if not already installed
-pip install rendercv
+uv tool install "rendercv[full]"
 
-# Render YAML to PDF (outputs to rendercv_output/)
-rendercv render cv.yaml
+# Render — design overrides loaded from design.yaml at project root
+# Output lands in generated-cvs/rendercv_output/
+rendercv render generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.yaml --design design.yaml
 
-# Move the generated PDF to the standard location
-# NOTE: rendercv_output/ is gitignored — the mv step is mandatory to persist the file
-mv rendercv_output/Jeferson_José_De_Freitas_Pinto_CV.pdf \
+# Move PDF to standard location
+mv "generated-cvs/rendercv_output/Jeferson_José_De_Freitas_Pinto_CV.pdf" \
    generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.pdf
+
+# Add indigo border frame
+gs -q -o generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}-framed.pdf \
+   -sDEVICE=pdfwrite \
+   -c "[ /Rect [20 20 575 822] /Border [2 2 2 [0.31 0.27 0.90]] /ANN pdfmark" \
+   -f generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.pdf
 ```
 
 ## Pairs With

@@ -1,0 +1,10 @@
+design:
+  theme: ink
+  page:
+    show_footer: false
+    show_top_note: false
+  header:
+    connections:
+      separator: "•"
+      show_icons: true
+      display_urls_instead_of_usernames: false

@@ -7,6 +7,8 @@ generated-cvs/
 # Data files (runtime state — keep config files)
 data/
 !data/headings.tsv
+!data/profile.example.tsv
+!data/targets.example.tsv
 
 # Sensitive docs
 docs/
@@ -27,3 +29,6 @@ node_modules/
 !.env.example
 *.log
 rendercv_output/
+
+# Personal CV — gitignored; copy from master-cv.example.yaml and fill in
+.agents/skills/cv-builder/master-cv.yaml

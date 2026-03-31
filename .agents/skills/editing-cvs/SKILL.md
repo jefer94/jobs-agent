@@ -103,16 +103,17 @@ uv run --with reportlab md_to_pdf.py generated-cvs/ --no-border
 **Heading format** (the converter parses these lines after the H1 name):
 - Items separated by `·` (U+00B7)
 - URLs are auto-detected and shown with icons — never write full `https://` URLs
-- **Phone: always include country code** — write `+56951451665` (never `951451665`)
-- Blog/website: write bare domain only (`jefer94.dev`)
-- GitHub: write `github.com/jefer94` (auto-shortened to `github/jefer94` with ◉ icon)
-- LinkedIn: write `linkedin.com/in/jefer94` (auto-shortened to `li/jefer94`)
-- Medium: write `medium.com/@jefer.dfp` (auto-shortened to `medium/@jefer.dfp` with ▪ M icon)
+> **Personal values:** read `data/profile.tsv` for all contact fields below.
 
-Example contact block:
+- **Phone: always include country code** — write `{phone}` from `data/profile.tsv` (never bare digits)
+- GitHub: write `github.com/{github}` (auto-shortened to `github/{github}` with ◉ icon)
+- LinkedIn: write `linkedin.com/in/{linkedin}` (auto-shortened to `li/{linkedin}`)
+- Medium: write `medium.com/{medium}` (auto-shortened to `medium/{medium}` with ▪ M icon)
+
+Example contact block (fill from `data/profile.tsv`):
 ```
-Santiago, Chile · +56951451665 · jdefreitaspinto@gmail.com
-github.com/jefer94 · medium.com/@jefer.dfp · jefer94.dev
+{location} · {phone} · {email}
+github.com/{github} · medium.com/{medium}
 ```
 
 **Section titles** — always use canonical labels from `data/headings.tsv`:

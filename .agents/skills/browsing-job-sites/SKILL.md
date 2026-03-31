@@ -18,7 +18,7 @@ Automates Chrome to interact with Chilean job portals and Google Jobs. Finds Spa
 
 See `references/job-sites.md` for login URLs, selectors, and quirks per site.
 
-- **LinkedIn** — linkedin.com/jobs (filter: Chile, Spanish)
+- **LinkedIn** — linkedin.com/jobs (filter: `{market}` / `{language}` from `data/targets.tsv`)
 - **Trabajando.cl** — trabajando.com
 - **Laborum.cl** — laborum.cl
 - **GetOnBoard** — getonbrd.com (tech-focused)
@@ -34,8 +34,8 @@ Task Progress:
 - [ ] 2. Prompt user for credentials at startup (see Credentials section)
 - [ ] 3. Open one browser context per portal in parallel (see Browser Setup)
 - [ ] 4. Log into each portal — use Google/LinkedIn OAuth where available
-- [ ] 5. Search all portals simultaneously with Spanish keywords from CV
-- [ ] 6. Filter: language=Spanish, location=Chile, posted=last 7 days
+- [ ] 5. Search all portals simultaneously with keywords from CV in `{language}` from `data/targets.tsv`
+- [ ] 6. Filter: language=`{language}`, location=`{market}` (from `data/targets.tsv`), posted=last 7 days
 - [ ] 7. Score each offer against CV (relevance check)
 - [ ] 8. For relevant offers: open offer page (max 1 per portal at a time), verify Spanish, apply
 - [ ] 9. Close offer page before opening the next one on that portal
@@ -44,7 +44,7 @@ Task Progress:
 
 ## Key Rules
 
-- **Only apply to offers written entirely in Spanish** — skip if description contains English
+- **Only apply to offers in the target language** — read `language` from `data/targets.tsv`; skip if detected language differs
 - Never apply to the same offer twice — check tracking store before applying
 - Prefer offers that match at least 2 skills from the CV
 - If a CAPTCHA appears, pause and ask the user for help
@@ -127,7 +127,7 @@ Prompt sequence (only ask for sites whose `.sessions/{portal}.enc` does not exis
 → Indeed password:
 ```
 
-- **LinkedIn and Google:** use OAuth sign-in with `jdefreitaspinto@gmail.com` — no password prompt needed
+- **LinkedIn and Google:** use OAuth sign-in with `{oauth_email from data/profile.tsv}` — no password prompt needed
 - Valid `.sessions/{portal}.enc` files skip re-login until the session expires
 - If `load_session(portal)` returns `None`, the session is missing/expired — prompt for login
 
