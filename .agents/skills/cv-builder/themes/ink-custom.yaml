@@ -1,0 +1,33 @@
+# Custom ink theme for rendercv
+# Based on ink theme with minimal modifications
+
+design:
+  theme: ink
+
+  # Page settings - no footer or top note
+  page:
+    size: a4
+    top_margin: 1.5cm
+    bottom_margin: 1.5cm
+    left_margin: 1.5cm
+    right_margin: 1.5cm
+    show_footer: false
+    show_top_note: false
+
+  # Header with icons, small dot separator
+  header:
+    alignment: center
+    space_below_name: 0.4cm
+    space_below_headline: 0.3cm
+    space_below_connections: 0.4cm
+    photo_width: 3.5cm
+    photo_position: left
+    photo_space_left: 0.2cm
+    photo_space_right: 0.2cm
+    connections:
+      phone_number_format: international
+      hyperlink: true
+      show_icons: true
+      display_urls_instead_of_usernames: false
+      separator: " • "
+      space_between_connections: 0.2cm

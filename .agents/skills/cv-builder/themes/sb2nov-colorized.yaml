@@ -1,108 +1,108 @@
 # Custom sb2nov-colorized theme for rendercv
-# Place this in ~/.local/share/rendercv/themes/ or use with --theme-path
+# Based on sb2nov theme with custom color palette and styling
+# Usage: rendercv render cv.yaml --design sb2nov-colorized.yaml
 
-# Color palette: indigo, violet, cyan, rose
-colors:
-  primary: "#4f46e5"      # indigo-600
-  secondary: "#7c3aed"    # violet-600
-  accent: "#0891b2"       # cyan-600
-  highlight: "#e11d48"  # rose-600
-  text: "#1f2937"         # gray-800
-  muted: "#9ca3af"        # gray-400
-  background: "#ffffff"
+design:
+  theme: sb2nov
 
-# Typography
-typography:
-  name:
-    font: "Playfair Display"  # Creative serif font
-    size: 20pt                # Reduced from 24pt
-    weight: bold
-    color: "#4f46e5"
+  # Page settings
+  page:
+    size: a4
+    top_margin: 1.2cm
+    bottom_margin: 1.2cm
+    left_margin: 1.5cm
+    right_margin: 1.5cm
+    show_footer: false
+    show_top_note: false
 
-  section:
-    font: "Inter"
-    size: 11pt
-    weight: bold
-    color: "#e11d48"
+  # Color palette: dark indigo shades
+  colors:
+    body: rgb(30, 27, 75)           # indigo-950 darkest for main text
+    name: rgb(30, 27, 75)           # indigo-950 darkest for name
+    headline: rgb(49, 46, 129)      # indigo-900 for positions
+    connections: rgb(67, 56, 202)    # indigo-700 for contact
+    section_titles: rgb(55, 48, 163) # indigo-800 for sections
+    links: rgb(49, 46, 129)         # indigo-900 for links
+
+  # Typography
+  typography:
+    line_spacing: 0.6em
+    alignment: justified
+    date_and_location_column_alignment: right
+    font_family:
+      body: New Computer Modern
+      name: Caveat Brush
+      headline: New Computer Modern
+      connections: New Computer Modern
+      section_titles: New Computer Modern
+    font_size:
+      body: 10pt
+      name: 22pt
+      headline: 10pt
+      connections: 9pt
+      section_titles: 1.3em
+    small_caps:
+      name: false
+      headline: false
+      connections: false
+      section_titles: false
+    bold:
+      name: true
+      headline: false
+      connections: false
+      section_titles: true
+
+  # Links
+  links:
     underline: true
-    underline-color: "#4f46e5"
+    show_external_link_icon: false
 
-  body:
-    font: "Inter"
-    size: 9pt
-    color: "#1f2937"
+  # Header
+  header:
+    alignment: center
+    space_below_name: 0.5cm
+    space_below_headline: 0.3cm
+    space_below_connections: 0.5cm
+    photo_width: 3.5cm
+    photo_position: left
+    photo_space_left: 0.4cm
+    photo_space_right: 0.4cm
+    connections:
+      phone_number_format: international
+      hyperlink: true
+      show_icons: true
+      display_urls_instead_of_usernames: false
+      separator: " • "
+      space_between_connections: 0.3cm
 
-  date:
-    font: "Inter"
-    size: 9pt
-    color: "#0891b2"
+  # Section titles
+  section_titles:
+    type: with_full_line
+    line_thickness: 0.8pt
+    space_above: 0.6cm
+    space_below: 0.3cm
 
-  company:
-    font: "Inter"
-    size: 10pt
-    weight: bold
-    color: "#4f46e5"
+  # Sections
+  sections:
+    allow_page_break: true
+    space_between_regular_entries: 0.5cm
+    space_between_text_based_entries: 0.15cm
+    show_time_spans_in: []
 
-  position:
-    font: "Inter"
-    size: 9pt
-    color: "#7c3aed"
-
-# Layout settings - single column
-layout:
-  columns: 1
-  section_spacing: 0.8em
-  entry_spacing: 0.6em
-
-# Page settings with frame
-page:
-  paper: a4
-  margin:
-    top: 1.2cm
-    bottom: 1.2cm
-    left: 1.5cm
-    right: 1.5cm
-  frame:
-    enabled: true
-    stroke: 1.5pt
-    color: "#4f46e5"
-    radius: 0pt
-
-# Icons for contact (FontAwesome or similar)
-# These map to the contact fields
-icons:
-  email: "\\faEnvelope"
-  phone: "\\faPhone"
-  location: "\\faMapMarker"
-  linkedin: "\\faLinkedin"
-  github: "\\faGithub"
-  medium: "\\faMedium"      # Added Medium icon
-  website: "\\faGlobe"
-
-# Use short identifiers instead of full URLs
-contact-format:
-  email: short        # jdefreitaspinto@gmail.com
-  phone: short        # +56951451665
-  linkedin: username    # jefer94
-  github: username    # jefer94
-  medium: username    # @jefer.dfp
-  website: domain     # jefer94.dev
-
-# Experience entry format - compact date + location on same line
-experience-format:
-  date-location-separator: " | "
-  date-format: "MM/YYYY"
-  show-location-inline: true
-
-# Education format
-education-format:
-  inline: true          # Institution + degree on same line
-  show-dates: true
-  date-format: "YYYY"
-
-# Profile section - conditional display
-profile:
-  # Include profile only if content fits comfortably on 1 page
-  # If experience is extensive, omit to save space
-  default: auto         # 'auto', 'always', 'never'
-  max-content-length: 800   # Approximate characters
+  # Entries
+  entries:
+    date_and_location_width: 4cm
+    side_space: 0.2cm
+    space_between_columns: 0.1cm
+    allow_page_break: false
+    short_second_row: false
+    summary:
+      space_above: 0.1cm
+      space_left: 0cm
+    highlights:
+      bullet: "•"
+      nested_bullet: "◦"
+      space_left: 0.15cm
+      space_above: 0.05cm
+      space_between_items: 0.05cm
+      space_between_bullet_and_text: 0.5em

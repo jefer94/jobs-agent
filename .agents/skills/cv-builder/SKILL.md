@@ -198,6 +198,25 @@ design:
 - **Email:** standard format
 - **Compact format:** Icons communicate same info with less space (no full URLs)
 
+**Custom Connections Workaround:**
+
+For social networks not natively supported by rendercv (like Medium), use `custom_connections` with FontAwesome icons:
+
+```yaml
+cv:
+  social_networks:
+    - network: LinkedIn
+      username: jefer94
+    - network: GitHub
+      username: jefer94
+  custom_connections:
+    - placeholder: Medium
+      url: https://medium.com/@jefer.dfp
+      fontawesome_icon: medium
+```
+
+Available FontAwesome icons: `medium`, `globe`, `calendar-days`, `twitter`, `youtube`, etc.
+
 ### Available Themes
 
 - `ink` — **DEFAULT** modern, minimal design with icons, clean typography
