@@ -11,11 +11,6 @@
       "sourceType": "github",
       "computedHash": "117464d5a01acfbf3c7d3939a90df78e2196025f545bdded831aa4aa63a80080"
     },
-    "cv-builder": {
-      "source": "claude-office-skills/skills",
-      "sourceType": "github",
-      "computedHash": "e5de7de7841c4c5d51985f55e56faa7e9df1566bf6288200c1944a56ac017786"
-    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",

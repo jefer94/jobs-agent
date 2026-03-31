@@ -1,6 +1,6 @@
 ---
 name: verify-cv
-description: Screenshots every page of a generated CV PDF using the Playwright MCP browser and visually inspects it for rendering defects. Call this immediately after any CV generation step (editing-cvs, cv-builder, or pdf skill). If issues are found, applies targeted fixes and re-renders.
+description: Screenshots every page of a generated CV PDF using the Playwright MCP browser and visually inspects it for rendering defects. Call this immediately after any CV generation step (cv-builder or pdf skill). If issues are found, applies targeted fixes and re-renders.
 ---
 
 # Verify CV
@@ -60,7 +60,7 @@ re-run pdftoppm to a fresh directory.
 
 ### 3. Diagnose and fix based on source
 
-**For `md_to_pdf.py`-generated CVs (test-pdf/, test-editing-cvs/):**
+**For `md_to_pdf.py`-generated CVs (legacy):**
 
 | Defect | Fix |
 |--------|-----|
@@ -74,7 +74,7 @@ re-run pdftoppm to a fresh directory.
 uv run --with reportlab md_to_pdf.py generated-cvs/<folder>/ --skip-sections "Idiomas,Resumen"
 ```
 
-**For `rendercv`-generated CVs (test-cv-builder/):**
+**For `rendercv`-generated CVs (cv-builder):**
 
 | Defect | Fix |
 |--------|-----|
@@ -84,7 +84,7 @@ uv run --with reportlab md_to_pdf.py generated-cvs/<folder>/ --skip-sections "Id
 
 ```bash
 # Re-render after YAML fix:
-rendercv render generated-cvs/test-cv-builder/<file>.yaml --pdf-path <file>.pdf
+rendercv render generated-cvs/cv-builder/<file>.yaml --pdf-path <file>.pdf
 ```
 
 ### 4. Re-screenshot after fix
