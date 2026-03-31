@@ -6,21 +6,24 @@ Login flows, search selectors, and apply patterns per site.
 
 - **Login URL:** https://www.linkedin.com/login
 - **OAuth:** Click "Iniciar sesión con Google" → sign in as `{oauth_email from data/profile.tsv}`
-- **Search URL:** https://www.linkedin.com/jobs/search/?keywords={query}&location=Chile&f_TPR=r604800
+- **Search URL:** https://www.linkedin.com/jobs/search/?keywords={query}&geoId=104621616&f_TPR=r86400&f_WT=1%2C2%2C3
+  - `geoId=104621616` → Santiago de Chile
+  - `f_TPR=r86400` → last 24 h (use `r604800` for last week)
+  - `f_WT=1%2C2%2C3` → on-site + remote + hybrid
 - **Language filter:** Add `&f_LL=es` for Spanish postings
 - **Apply button:** `button[aria-label="Solicitar empleo"]` or `button[aria-label="Solicitud sencilla"]`
 - **Easy Apply:** Prefer Easy Apply offers — look for `span:text("Solicitud sencilla")`
-- **Session:** Save after OAuth to `.sessions/linkedin.json`
+- **Session:** Save after OAuth to `.sessions/linkedin.enc`
 - **1 offer page rule:** Open offer, apply or skip, close tab — then open next
 
 ### LinkedIn Login Flow
 ```
-1. Check .sessions/linkedin.json — if valid, skip login
+1. Check .sessions/linkedin.enc — if valid, skip login
 2. Otherwise: navigate to login page
 3. Click "Continuar con Google"
 4. Select or type `{oauth_email from data/profile.tsv}`
 5. Complete Google OAuth flow
-6. Save context storage state to .sessions/linkedin.json
+6. Save context storage state to .sessions/linkedin.enc (via sessions.py)
 ```
 
 ### LinkedIn Search Flow
@@ -36,9 +39,11 @@ Login flows, search selectors, and apply patterns per site.
 
 ## Trabajando.cl
 
-- **Login URL:** https://www.trabajando.com/login
-- **Search URL:** https://www.trabajando.com/trabajo-en/chile/?q={query}
+- **Login URL:** https://www.trabajando.cl/login
+- **Search URL:** https://www.trabajando.cl/trabajo-empleo/{query}?ubicacion=metropolitana+de+santiago&region=1
+  - Replace spaces in query with `%20` (e.g. `solution%20architect`)
 - **Apply button:** `a.btn-postular` or `button:text("Postular")`
+- **Session:** `.sessions/trabajando.enc`
 - **Notes:** Requires Chilean RUT for some offers — skip those if not available
 
 ---
@@ -46,8 +51,10 @@ Login flows, search selectors, and apply patterns per site.
 ## Laborum.cl
 
 - **Login URL:** https://www.laborum.cl/login
-- **Search URL:** https://www.laborum.cl/empleos?q={query}&l=Chile
+- **Search URL:** https://www.laborum.cl/en-region-metropolitana/empleos-busqueda-{query}.html
+  - Replace spaces with `-` (e.g. `arquitecto-de-soluciones`)
 - **Apply button:** `button:text("Postularme")` or `a:text("Postular")`
+- **Session:** `.sessions/laborum.enc`
 - **Notes:** Some offers redirect to company site — log URL and skip auto-apply
 
 ---
@@ -55,9 +62,12 @@ Login flows, search selectors, and apply patterns per site.
 ## GetOnBoard (getonbrd.com)
 
 - **Login URL:** https://www.getonbrd.com/login
-- **Search URL:** https://www.getonbrd.com/empleos?query={query}&country=CL
+- **Search URL:** https://www.getonbrd.com/jobs-{query}
+  - Replace spaces with `-` (e.g. `jobs-solution-architect`)
+- **My Jobs (saved/applied):** https://www.getonbrd.com/myjobs
 - **Apply button:** `a:text("Aplicar")` or `button:text("Aplicar a este trabajo")`
 - **Language check:** Most offers are bilingual — only apply if description body is Spanish
+- **Session:** `.sessions/getonbrd.enc`
 - **Notes:** Tech-focused; best for developer/engineering roles
 
 ---
@@ -66,15 +76,19 @@ Login flows, search selectors, and apply patterns per site.
 
 - **Login URL:** https://cl.computrabajo.com/login
 - **Search URL:** https://cl.computrabajo.com/trabajo-de-{query}
+  - Replace spaces with `-` (e.g. `trabajo-de-arquitecto-de-soluciones`)
 - **Apply button:** `a#applyBtn` or `button:text("Inscribirme")`
+- **Session:** `.sessions/computrabajo.enc`
 
 ---
 
 ## Indeed Chile
 
 - **Login URL:** https://secure.indeed.com/account/login
-- **Search URL:** https://cl.indeed.com/jobs?q={query}&l=Chile&fromage=7
+- **Search URL:** https://cl.indeed.com/jobs?q={query}&l=Santiago+de+Chile%2C+Regi%C3%B3n+Metropolitana
+  - Optionally append `&fromage=1` (last 24h) or `&fromage=7` (last week)
 - **Apply button:** `button[aria-label="Postularse ahora"]` or `span:text("Postularse fácilmente")`
+- **Session:** `.sessions/indeed.enc`
 - **Language check:** Indeed mixes English/Spanish offers — verify `lang` attribute or scan first 100 chars of description
 
 ---
@@ -83,7 +97,7 @@ Login flows, search selectors, and apply patterns per site.
 
 - **Search URL:** https://www.google.com/search?q={query}+trabajo+Chile&ibp=htl;jobs
 - **Login:** Sign in to Google as `{oauth_email from data/profile.tsv}` before searching (unlocks saved jobs and personalised results)
-- **OAuth flow:** Navigate to accounts.google.com → sign in with `{oauth_email from data/profile.tsv}` → save session to `.sessions/google.json`
+- **OAuth flow:** Navigate to accounts.google.com → sign in with `{oauth_email from data/profile.tsv}` → save session to `.sessions/google.enc` (via sessions.py)
 - Scrape job cards from Google's jobs panel
 - Each card links to the original site — follow link and apply there
 - **Selector:** `div[data-ved] .BjJfJf` for job titles in the panel
