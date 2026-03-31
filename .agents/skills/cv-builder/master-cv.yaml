@@ -1,0 +1,244 @@
+# MASTER CV — Jeferson José De Freitas Pinto
+# ============================================================
+# Este archivo NO se usa para postulaciones directas.
+# Se usa como fuente canónica para generar CVs específicos por oferta.
+# Contiene TODO el historial, todos los proyectos, todos los bullets.
+# Puede tener múltiples páginas — eso es intencional.
+# ============================================================
+# Uso:
+#   rendercv render master-cv.yaml --design themes/ink-custom.yaml
+# ============================================================
+
+cv:
+  name: Jeferson José De Freitas Pinto
+  location: Santiago, Chile
+  email: jdefreitaspinto@gmail.com
+  social_networks:
+    - network: LinkedIn
+      username: jefer94
+    - network: GitHub
+      username: jefer94
+  custom_connections:
+    - placeholder: "+56951451665"
+      url: "https://wa.me/56951451665"
+      fontawesome_icon: phone
+    - placeholder: "@jefer.dfp"
+      url: https://medium.com/@jefer.dfp
+      fontawesome_icon: medium
+
+  sections:
+
+    # ----------------------------------------------------------
+    # PERFIL
+    # ----------------------------------------------------------
+    perfil:
+      - "Ingeniero de Software con más de 5 años de experiencia construyendo plataformas SaaS, arquitecturas cloud-native y herramientas de IA. En 4Geeks realicé más de 3,700 commits al API principal de la plataforma educativa (2,000+ usuarios activos), alcanzando picos de más de 10,000 líneas de código en una semana sin asistencia de IA, y lideré durante ~3 años un equipo de hasta 10 personas. Me especializo en diseño de sistemas distribuidos, arquitectura limpia (DDD, hexagonal, event-driven) y liderazgo técnico."
+      - "En Capy.town diseñé y construí en 3 meses un CMS headless multi-tenant production-ready (cms-ai) con 17 tipos de campos, compilación MDX, pipeline de imágenes con Sharp/CDN, background jobs con BullMQ, e infraestructura serverless sobre Cloudflare Workers + R2 + Terraform. Construí también una plataforma de gestión de conocimiento con búsqueda híbrida (FTS5 + embeddings vectoriales nativos de Turso sin base vectorial externa), integración MCP para agentes de IA, y un gateway de autenticación passwordless con 10+ providers OAuth."
+      - "En 4Geeks implementé el módulo de pagos completo (seat-based billing, auto-recharge, team subscriptions con Redis distributed locking) para una plataforma con 2,000+ usuarios activos. Establecí más de 5,500 pruebas automatizadas llevando la cobertura al 80%, con pipeline CI/CD de 5 minutos en GitHub Actions. Publiqué 3 librerías open source en PyPI y 2 paquetes en npm."
+      - "Tengo experiencia práctica con GitHub Actions CI/CD, quality gates (ESLint, Jest, Cypress, SonarQube), infrastructure as code con Terraform, y despliegues a Cloudflare Workers, Railway y Vercel. Diseño APIs type-safe con Hono + Drizzle ORM y construyo UIs modernas con Astro + Svelte o React + Next.js."
+      - "Construyo herramientas de automatización con IA: desde agentes multi-step con LangChain y OpenRouter, hasta un framework de orquestación de sub-agentes (agent-teams-lite) y un sistema de spec-driven development (spec-first) que usa IA para validar implementaciones contra especificaciones antes del code review humano."
+      - "Valores técnicos: separación estricta de capas (dominio, aplicación, infraestructura), testing como primer ciudadano, documentación como contrato, feedback loops cortos, y entrega incremental de valor."
+
+    # ----------------------------------------------------------
+    # EXPERIENCIA PROFESIONAL
+    # ----------------------------------------------------------
+    experiencia:
+      - company: Capy.town
+        position: "AI Solution Architect / Lead Developer / Tech Lead / Platform Engineer / Software Architect / Full Stack Engineer"
+        location: Colombia (Remoto)
+        start_date: 2025-07
+        end_date: present
+        highlights:
+          # --- Arquitectura General ---
+          - "Diseñé arquitectura multi-dominio DDD con 3 bounded contexts separados: CMS, Knowledge y Auth; cada uno con su propio stack, base de datos y ciclo de despliegue independiente"
+          - "Implementé Arquitectura Limpia con separación estricta de capas: dominio (entidades + reglas de negocio), aplicación (casos de uso), infraestructura (persistencia, servicios externos) y presentación (HTTP/API)"
+          - "Tomé decisiones de diseño de sistema: serverless vs. servidor persistente para cada carga de trabajo; seleccioné Cloudflare Workers para el API del CMS (baja latencia, stateless) y Railway para workers con estado (BullMQ + Redis)"
+
+          # --- CMS AI (cms-ai) — construido en 3 meses ---
+          - "Construí un CMS headless multi-tenant production-ready desde cero en 3 meses: organizaciones, roles (Owner, Admin, Editor, Viewer), aislamiento completo de datos por tenant y control de uso de tokens de IA por organización"
+          - "Diseñé sistema de campos personalizados con 17 tipos: texto, número, booleano, fecha, JSON, YAML, relaciones, MDX, y más; con validaciones built-in y reglas de validación personalizadas por campo"
+          - "Implementé compilación MDX server-side con componentes personalizados registrados por organización (plantillas, props declarativas, hints de uso)"
+          - "Construí pipeline de procesamiento de imágenes con Sharp: redimensionamiento automático, conversión de formato, optimización de calidad y entrega vía CDN con Cloudflare R2 (regiones EU y global)"
+          - "Diseñé arquitectura DB-per-tenant con Drizzle ORM + Turso/LibSQL, migraciones sin downtime y cumplimiento de requisitos SOC2 para aislamiento de datos"
+          - "Implementé sistema de background jobs con BullMQ + Redis para: generación de contenido con IA, traducciones automáticas, procesamiento de imágenes y notificaciones webhook"
+          - "Desarrollé BFF (Backend for Frontend) con Hono para el panel de administración, integrando Stripe para modelo de pricing basado en uso y suscripciones con upgrades/downgrades"
+          - "Construí API Gateway con autenticación por API keys con scopes granulares, rate limiting y CORS configurable; gateway disponible en Railway con Hono"
+          - "Diseñé sistema de localización (i18n) con soporte para más de 22 idiomas built-in y configuración de locale canónico por organización"
+
+          # --- Knowledge Universe (knowledge) ---
+          - "Diseñé plataforma de gestión de conocimiento con 'universos' aislados o interconectables mediante 'bridges' con control de flujo por topic y tipo de documento"
+          - "Implementé búsqueda híbrida combinando FTS5 (full-text search) con embeddings vectoriales en una sola tabla de Turso, sin base de datos vectorial externa"
+          - "Integré MCP (Model Context Protocol) para exponer el knowledge base como herramienta para agentes de IA con soporte para tool calls desde cualquier cliente MCP-compatible"
+          - "Construí chat embebible con soporte de MCP tools, autenticación external via auth.capy.town y configuración de contexto por sesión"
+
+          # --- Auth Gateway (auth) ---
+          - "Diseñé y construí un gateway de autenticación passwordless completo con: Passkey (WebAuthn), Magic Link, Email OTP y Two-Factor Authentication (2FA)"
+          - "Integré 10+ proveedores OAuth: Google, Facebook, Apple, GitHub, Kakao, Naver, Line, Yandex, VK, WeChat"
+          - "Implementé gestión de organizaciones multi-tenant, API keys con scopes, panel de administración y OAuth Proxy para proveedores personalizados"
+          - "Construido con Astro + Better Auth + Turso/LibSQL; documentación OpenAPI auto-generada"
+
+          # --- Incident Report (incident-report) ---
+          - "Entregué sistema SSR de gestión de no-conformidades para cliente real (equipamiento dental) en 2 días: desde los documentos del cliente hasta deployment funcional, con feedback directo y ajustes del flujo de vistas en cada iteración"
+          - "Stack: Astro 5, Svelte 5, Tailwind CSS v4, Drizzle ORM, Turso, Better Auth, Bun; deployment on-premises junto a R2 y Turso"
+          - "Implementé role-based access control con registro público configurable desde el panel admin"
+
+          # --- CMS Workers / EDD (evolución de cms-ai-microservices) ---
+          - "Prototipé separación de servicios del CMS en microservicios independientes (proof of concept en Railway); evaluación resultó en adoptar modelo worker/EDD más simple y sin overhead de red"
+          - "Stack experimentado: Bun, Hono, TypeScript, Turso (@libsql/client), API Gateway con X-Api-Key auth"
+          - "Desplegué n8n en Railway con Dockerfile personalizado: instalé node custom n8n-nodes-turso (integración directa con LibSQL/Turso) y @aws-sdk/client-s3 para workflows de generación de contenido asistida por IA"
+          - "Cliente activo en integración: CapySchool (capyschool.com) — plataforma de aprendizaje de idiomas usa cms-ai como backend headless para gestión de contenido multilingüe con 30+ idiomas soportados"
+
+          # --- CapySchool (capy-school / capy-school.astro) — 503 commits totales ---
+          - "Construí plataforma de aprendizaje de fonética e idiomas (capyschool.com) con 11,717 clics orgánicos en 3 meses (≈130/día promedio, pico 225/día) según Google Search Console; 503 commits propios distribuidos entre la versión Next.js 14 (295) y la migración a Astro 5 + Svelte 5 (208)"
+          - "Desarrollé IPA Reader: lector de fonética con síntesis de voz via Amazon Polly + Google TTS, selección de proveedor/tipo de voz/idioma/velocidad, descarga de audio y share modal con deep linking por parámetro URL"
+          - "Implementé 4 tipos de reader fonético: IPA (inglés), Pinyin (chino mandarín), Jyutping (cantonés), Yomigana (japonés); cada uno con keyboard personalizado de entrada y validación de símbolos fonéticos"
+          - "Construí pulmonic consonants chart interactivo (tabla fonética IPA completa) usando datos panphon (ipa_all.csv, diacritic_definitions)"
+          - "Internacionalicé la plataforma en 30+ idiomas con soporte RTL nativo (hebreo, persa, urdu); routing i18n con locale en URL ([locale]/reader)"
+          - "Implementé sistema de vocabulario CEFR (A1–C2): datos estructurados por nivel y tipo de palabra (sustantivos, verbos, adverbios, auxiliares, preposiciones, linking words, etc.)"
+          - "Construí review system: add-to-review-list, log-lesson-visit, remove-from-review-list con APIs propias; tracking de palabras estudiadas por usuario"
+          - "Optimicé SEO con JSON-LD structured data, sitemap.xml dinámico, robots.txt y og:image generado por API; GSC: 11,717 clics en 3 meses, 1,000+ queries indexadas — 'ipa reader' posición 2.3 (3,067 clics, 17,520 impresiones, 17.5% CTR), múltiples términos japoneses y chinos en posición 1.0–1.1; lanzamiento anunciado en r/conlangs (119K miembros, 42 upvotes) y cross-posts en r/ChineseLanguage (314K), r/linguistics (383K) y r/japanese"
+          - "Migré de Next.js 14 App Router a Astro 5 + Svelte 5 para mejorar performance de carga estática y simplificar arquitectura de componentes"
+          - "Integré auth.capy.town para sesiones de usuario; chat embebible; profile section con progreso de aprendizaje"
+
+          # --- CI/CD y DevOps ---
+          - "Implementé CI/CD con GitHub Actions: ESLint (linting), Jest (unit tests), Cypress (e2e), SonarQube (cobertura de código), despliegue automatizado a Vercel/Railway/Cloudflare"
+          - "Configuré infrastructure as code con Terraform para: Cloudflare Workers, R2 buckets y Railway services"
+          - "Establecí patrón de despliegue zero-downtime con migraciones de base de datos versionadas y rollback automático"
+
+      - company: 4Geeks
+        position: "Senior Full Stack Developer / SRE / Platform Engineer / Backend Engineer / DevOps Engineer / Tech Lead"
+        location: Miami, Estados Unidos (Remoto)
+        start_date: 2020-10
+        end_date: 2025-05
+        highlights:
+          # --- API Principal (breathecode/apiv2) ---
+          - "Desarrollé y mantuve el API central de 4Geeks (breathecode/apiv2): plataforma educativa con 2,000+ usuarios activos y más de 15 módulos Django (payments, authenticate, admissions, certificate, mentorship, events, assignments, marketing, provisioning, media, notify, career, registry, feedback, services)"
+          - "Implementé sistema de facturación por asientos (seat-based pricing) con modelos: Bag, Invoice, Consumable, Subscription, BillingTeam, ServiceItem; incluyendo lógica de prorrateo, descuentos por volumen y opciones de financiamiento"
+          - "Construí auto-recharge: control de gasto automático para suscripciones con validación por servicio, Redis locking para prevenir condiciones de carrera, señal post_save para disparo de recargas y manejo de errores de precisión decimal"
+          - "Desarrollé team subscriptions con asientos adicionales, roles de equipo, notificaciones por email, validación de invitaciones y consumables asignados por miembro"
+          - "Implementé gestión completa de autenticación: OAuth (Google, GitHub), permisos por academia, invitaciones de usuario, configuraciones por usuario, tokens de sesión"
+          - "Construí módulo de certificados digitales con generación automática, validación de finalización de cohort y entrega por email"
+          - "Contribuí al módulo de mentorías con asignación de mentores, sesiones programadas y registro de feedback"
+          - "Establecí más de 5,500 pruebas de regresión automatizadas llevando la cobertura de código al 80%: pytest con fixtures, mocks de servicios externos, pipeline CI de 5 minutos en GitHub Actions"
+          - "Implementé arquitectura event-driven con señales Django + Celery desacoplando: notificaciones, procesamiento de medios, tareas de background, envío de emails y webhooks"
+          - "Configuré pipelines CI/CD con quality gates: ESLint, pytest (unit), Cypress (e2e), SonarQube; pipeline completo en 5 minutos con integración a GitHub Actions y deployment automático"
+          - "Lideré equipo de hasta 10 personas durante ~3 años: 5 desarrolladores senior + 5 pasantes de 4Geeks Academy; asigné tareas, revisé PRs y mentoricé a estudiantes en Python y Django"
+          - "Aporté más de 3,700 commits al repositorio a lo largo de 4.5 años, con picos de más de 10,000 líneas de código modificadas en una sola semana"
+          - "Trabajé con PostgreSQL en producción: optimización de queries con índices, explain analyze, queries complejas con Q objects y anotaciones, manejo de transacciones atómicas"
+          - "Implementé Redis para: rate limiting, distributed locking, cache de sesiones, queue de Celery y almacenamiento de tokens temporales"
+          - "Desarrollé serializers avanzados de DRF con validaciones de negocio, transformaciones complejas y relaciones anidadas"
+
+          # --- LearnPack CLI (learnpack-cli) ---
+          - "Contribuciones puntuales a learnpack-cli (@learnpack/learnpack en npm, v5.0.217, 321 descargas/semana, pico de 1,628/semana): Redis clustering, performance con caching + rate limiting + paralelismo, logging con Pino y guía de integración con New Relic"
+          - "Stack: Node.js, oclif (framework de CLI), TypeScript"
+
+          # --- Central1 (WhatsApp-inspired messaging platform) ---
+          - "Desarrollé plataforma de mensajería con diseño inspirado en WhatsApp: broadcast messaging, scheduling, soporte multi-bloque de contenido con drag-and-drop reordering"
+          - "Implementé sistema de transcripción de audio con IA con timeout de 10 segundos y webhook de verificación"
+          - "Construí internacionalización (i18n) completa con dynamic imports, soporte de rutas i18n y keys organizadas por dominio"
+          - "Rediseño completo de UI: replaced PNG logo with SVG, gradient → solid colors, light borders, WhatsApp dark mode, diseño minimalista consistente"
+          - "Implementé infinite scroll con guards para prevenir triggers prematuros en carga inicial"
+          - "Construí broadcast groups con search, select-all y file uploads con mimetype handling"
+
+          # --- Librerías Open Source PyPI ---
+          - "Publiqué capy-core (PyPI): librería utilitaria para Django con soporte i18n (capyc.core.i18n), excepciones de REST framework (capyc.rest_framework.exceptions), e integraciones de testing"
+          - "Publiqué celery-task-manager (PyPI, LGPL 3.0): plugin Django/Celery para gestión de tareas con prioridades, reintentos y manejo de errores declarativo"
+          - "Publiqué linked-services (PyPI, LGPL 3.0): librería para comunicación entre microservicios (pairwise key auth), soporte para Django, requests, httpx y aiohttp"
+
+          # --- SRE / DevOps ---
+          - "Ejecuté migración de Redis en producción sin downtime: swap de variable de entorno sin restart de servicios ni pérdida de sesiones"
+          - "Gestioné infraestructura en producción sobre Heroku: PostgreSQL, Redis, Celery workers, Docker, Procfile-based deployment"
+          - "Configuré monitoreo con New Relic, alertas de performance y dashboards de métricas"
+          - "Mantuve Docker + docker-compose para ambientes de desarrollo local y CI"
+
+    # ----------------------------------------------------------
+    # PROYECTOS PERSONALES
+    # ----------------------------------------------------------
+    proyectos:
+      - name: Spec Guard (spec-first)
+        date: 2025
+        highlights:
+          - "GitHub Action para spec-driven development: rechaza PRs sin especificaciones, valida implementaciones con IA contra specs aceptadas antes del review humano"
+          - "Flujo en 3 etapas: spec PR (solo docs/specs permitidos) → aceptación por maintainer → implementation PR con validación IA"
+          - "Agente LangChain sandboxed via OpenRouter con soporte BDD (Given/When/Then), protección contra prompt injection y feedback estructurado"
+          - "Ahorra tiempo de engineers senior: IA pre-valida compliance antes de asignar reviewer humano"
+          - "Configurable: model, extensiones de spec, roles autorizados, tags, mensajes custom; deployment como GitHub Action reutilizable"
+
+      - name: Jobs Agent
+        date: 2026
+        highlights:
+          - "Agente de automatización de búsqueda y postulación de empleos para el mercado chileno"
+          - "Controla Chrome vía Playwright: búsqueda paralela en múltiples portales (LinkedIn, Trabajando.cl, Laborum.cl, GetOnBoard, CompuTrabajo, Indeed Chile)"
+          - "Genera CVs personalizados por oferta con rendercv + Typst; verifica calidad del PDF rasterizando a PNG"
+          - "Responde formularios de postulación con búsqueda semántica en memoria persistente (Engram MCP) + TSV de respuestas editables"
+          - "Sistema de guardrails contra prompt injection en contenido de ofertas (OWASP LLM Top 10)"
+          - "Registro de postulaciones, Q&A y métricas de respuesta/entrevistas en JSON flat-file"
+
+      - name: Choco Algorithm
+        date: 2021
+        highlights:
+          - "Emulador de runtime de algoritmos tipo IDE con transpiler de pseudocódigo a JavaScript; desplegado en GitHub Pages"
+          - "CI/CD con CircleCI; 97 commits, 3 forks adoptados por la comunidad"
+          - "Stack: JavaScript, Node.js"
+
+    # ----------------------------------------------------------
+    # PUBLICACIONES TÉCNICAS
+    # ----------------------------------------------------------
+    publicaciones:
+      - "**\"GitHub Action para fortalecer spec-first development: bloqueando PRs sin especificación previa\"** — Medium (@jefer.dfp), Mar 2026 · Flujo de 3 etapas: spec PR (bloqueado si no hay specs) → aceptación por maintainer → implementation PR con validación IA que confirma cumplimiento — la implementación pasa a ser consecuencia, no punto de partida"
+      - "**\"Como programar más rápido y mejor usando SDD y BDD\"** — Medium (@jefer.dfp), Mar 2026 · SDD (specs primero, implementación como consecuencia) + BDD (casos de prueba como historias de usuario con Gherkin); cómo estructurar especificaciones para afinar contexto de agentes IA y reducir tokens"
+      - "**\"Estrategias de desarrollo antiregresivas en la era de los agentes autónomos\"** — Medium (@jefer.dfp), Mar 2026 · PRDs, RFCs, OpenAPI y workflows como mecanismos antiregresivos; segregación de funcionalidades críticas via microservicios o N8N; configuración de workflows en Windsurf/OpenCode para encadenar specs, BDD y TDD"
+
+    # ----------------------------------------------------------
+    # CONTRIBUCIONES OPEN SOURCE
+    # ----------------------------------------------------------
+    open_source:
+      - "**capy-core** (PyPI) — Librería utilitaria para Django con i18n (capyc.core.i18n), excepciones REST framework y helpers de testing. Instalación: pip install capy-core[django,pytest]"
+      - "**celery-task-manager** (PyPI, LGPL 3.0) — Plugin Django/Celery para gestión declarativa de tareas: prioridades (NOTIFICATION, etc.), manejo de excepciones AbortTask/RetryTask, validaciones. Instalación: pip install celery-task-manager"
+      - "**linked-services** (PyPI, LGPL 3.0) — Comunicación segura entre microservicios con pairwise key authentication (reemplaza algoritmos de firma). Soporte para Django, requests, httpx, aiohttp. Instalación: pip install linked-services[django,requests,aiohttp]"
+      - "**@learnpack/learnpack** (npm, v5.0.217) — CLI oclif para crear, publicar y ejecutar paquetes de aprendizaje interactivo. Comandos: audit, translate, test, publish, serve. Instalación: npm install -g @learnpack/learnpack"
+      - "**lit-ssr-utils** (npm, TypeScript) — Librería de SSR para Lit Web Components en entornos no-JS: HTTP API con adapter Elysia/Bun que recibe HTML de componente y retorna HTML renderizado server-side; implementación Python complementaria (lit-ssr.py). 17 commits"
+
+    # ----------------------------------------------------------
+    # HABILIDADES
+    # ----------------------------------------------------------
+    habilidades:
+      - label: Lenguajes
+        details: TypeScript, Python, JavaScript, SQL
+      - label: Frontend
+        details: React 18, Next.js 14 (App Router), Astro 5, Svelte 5, Tailwind CSS v4, Shadcn/UI, Skeleton UI, Zustand, Radix UI, Lucide
+      - label: Backend
+        details: Hono 4.x, NestJS, FastAPI, Django 4.x, Django REST Framework, Celery, BullMQ, Node.js, Bun, Elysia.js
+      - label: Bases de Datos
+        details: PostgreSQL, Drizzle ORM, TypeORM, Prisma, Turso/LibSQL, LibSQL (FTS5 + vector search), Redis, BigQuery
+      - label: Cloud e Infraestructura
+        details: Cloudflare Workers, Cloudflare R2, Cloudflare Pages, Railway, Vercel, AWS, GCP, Docker, Terraform, GitHub Actions
+      - label: Arquitectura
+        details: DDD, Arquitectura Limpia, Hexagonal, Event-Driven, Microservicios, BFF, API Gateway, Multi-Tenant, DB-per-Tenant, Serverless
+      - label: Testing
+        details: Jest, Cypress (E2E), Playwright, Testing Library, pytest, TDD, BDD, fixtures, mocks, SonarQube, 5.500+ pruebas de regresión
+      - label: IA y Agentes
+        details: LangChain, OpenRouter, MCP (Model Context Protocol), Vector Search, Hybrid FTS5+Vector, Prompt Engineering, Agent Orchestration
+      - label: DevOps y Herramientas
+        details: GitHub Actions CI/CD, Docker Compose, Terraform, Bun, oclif CLI, Better Auth, Stripe, n8n, New Relic, Redis Locking
+      - label: Publicaciones OSS
+        details: capy-core (PyPI), celery-task-manager (PyPI), linked-services (PyPI), @learnpack/learnpack (npm)
+
+    # ----------------------------------------------------------
+    # EDUCACIÓN
+    # ----------------------------------------------------------
+    educacion:
+      - institution: Universidad Nacional Experimental de los Llanos Centrales Rómulo Gallegos
+        area: Ingeniería en Informática
+        start_date: 2012
+        end_date: 2017
+
+    # ----------------------------------------------------------
+    # IDIOMAS
+    # ----------------------------------------------------------
+    idiomas:
+      - "**Español** — Nativo"
+      - "**Inglés** — B1 (Hablado), Intermedio-avanzado (lectura y escritura técnica: código, documentación, PRs, issues)"
+
+design:
+  theme: ink-custom

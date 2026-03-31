@@ -124,6 +124,10 @@ Task Progress:
 - Never mix languages within a single CV (sections, bullets, dates must all be in one language)
 - Write body text in the same language as the offer; formal register always
 
+**Tech anglicisms in Spanish CVs — always keep as-is:**  
+Technical anglicisms are standard in the Chilean/Latin American industry. Do NOT translate:  
+`deploy`, `backend`, `frontend`, `framework`, `testing`, `pipeline`, `commit`, `feature`, `branch`, `release`, `merge`, `pull request`, `sprint`, `endpoint`, `build`, `workflow`, `codebase`, `refactor`, `stack`, `benchmark`, `rollback`, `downtime`, `payload`, `middleware`, `webhook`, `worker`, `scheduler`, `rate limiting`, `caching`, `logging`, `dashboard`, `feedback`, `scope`, `token`, `SDK`, `API`, `CLI`, `SaaS`, `open source`, `proof of concept`
+
 ### Section separation — no mixing experience with projects
 
 | Section | What belongs here |
@@ -300,6 +304,7 @@ pip install rendercv
 rendercv render cv.yaml
 
 # Move the generated PDF to the standard location
+# NOTE: rendercv_output/ is gitignored — the mv step is mandatory to persist the file
 mv rendercv_output/Jeferson_José_De_Freitas_Pinto_CV.pdf \
    generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.pdf
 ```
