@@ -6,11 +6,12 @@ Usage:
 
 Options:
   --skip-sections  Comma-separated list of H2 section titles to drop (e.g. Idiomas,Resumen)
+  --no-border      Disable the decorative indigo page border frame
 
 The script enforces 1-page output by default: if content overflows it retries
 with progressively tighter font sizes until it fits.
 """
-import sys, os, re
+import sys, os, re, csv
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm, mm
@@ -41,28 +42,28 @@ _FONT, _FONT_BOLD = register_fonts()
 
 def build_styles(base_size=8.8):
     s = base_size
+    INDIGO  = colors.HexColor("#4F46E5")
+    VIOLET  = colors.HexColor("#7C3AED")
+    INK     = colors.HexColor("#18181B")
+    MUTED   = colors.HexColor("#52525B")
     return {
-        "name":    ParagraphStyle("name",    fontName=_FONT_BOLD, fontSize=s*2.0, leading=s*2.4,
-                                   spaceAfter=1, textColor=colors.HexColor("#12122a"), alignment=TA_CENTER),
-        "contact": ParagraphStyle("contact", fontName=_FONT, fontSize=s*0.9, leading=s*1.3,
-                                   spaceAfter=4, textColor=colors.HexColor("#444444"), alignment=TA_CENTER),
-        "h2":      ParagraphStyle("h2",      fontName=_FONT_BOLD, fontSize=s*1.1, leading=s*1.5,
-                                   spaceBefore=7, spaceAfter=2,
-                                   textColor=colors.HexColor("#1a5276"), borderPadding=(0,0,1,0)),
-        "h3":      ParagraphStyle("h3",      fontName=_FONT_BOLD, fontSize=s*0.98, leading=s*1.35,
-                                   spaceBefore=4, spaceAfter=0,
-                                   textColor=colors.HexColor("#2c3e50")),
-        "sub":     ParagraphStyle("sub",     fontName=_FONT, fontSize=s*0.88, leading=s*1.25,
-                                   spaceAfter=1, textColor=colors.HexColor("#555555")),
-        "body":    ParagraphStyle("body",    fontName=_FONT, fontSize=s, leading=s*1.35,
-                                   spaceAfter=1, textColor=colors.HexColor("#222222")),
-        "bullet":  ParagraphStyle("bullet",  fontName=_FONT, fontSize=s, leading=s*1.35,
-                                   spaceAfter=1, leftIndent=10,
-                                   textColor=colors.HexColor("#222222")),
-        "skill_l": ParagraphStyle("skill_l", fontName=_FONT_BOLD, fontSize=s*0.88, leading=s*1.3,
-                                   textColor=colors.HexColor("#1a5276")),
-        "skill_v": ParagraphStyle("skill_v", fontName=_FONT, fontSize=s*0.88, leading=s*1.3,
-                                   textColor=colors.HexColor("#333333")),
+        "name":     ParagraphStyle("name",     fontName=_FONT_BOLD, fontSize=s*2.0, leading=s*2.4,
+                                    spaceAfter=1, textColor=INDIGO, alignment=TA_CENTER),
+        "contact":  ParagraphStyle("contact",  fontName=_FONT, fontSize=s*0.9, leading=s*1.3,
+                                    spaceAfter=4, textColor=MUTED, alignment=TA_CENTER),
+        "h2":       ParagraphStyle("h2",       fontName=_FONT_BOLD, fontSize=s*1.1, leading=s*1.5,
+                                    spaceBefore=7, spaceAfter=2, textColor=VIOLET),
+        "h3":       ParagraphStyle("h3",       fontName=_FONT_BOLD, fontSize=s*0.98, leading=s*1.35,
+                                    spaceBefore=4, spaceAfter=0,
+                                    textColor=colors.HexColor("#4338CA")),
+        "sub":      ParagraphStyle("sub",      fontName=_FONT, fontSize=s*0.88, leading=s*1.25,
+                                    spaceAfter=1, textColor=MUTED),
+        "body":     ParagraphStyle("body",     fontName=_FONT, fontSize=s, leading=s*1.35,
+                                    spaceAfter=1, textColor=INK),
+        "bullet":   ParagraphStyle("bullet",   fontName=_FONT, fontSize=s, leading=s*1.35,
+                                    spaceAfter=1, leftIndent=10, textColor=INK),
+        "skill_row":ParagraphStyle("skill_row",fontName=_FONT, fontSize=s*0.9, leading=s*1.3,
+                                    spaceAfter=2, textColor=INK),
     }
 
 
@@ -71,9 +72,10 @@ def build_styles(base_size=8.8):
 ICON_EMAIL    = "\u2709"  # 
 ICON_PHONE    = "\u260e"  # 
 ICON_LOC      = "\u25c6"  # 
-ICON_WEB      = "\u2295"  # 
-ICON_GH       = "\u229b"  #  (GitHub)
+ICON_WEB      = "\u25c7"  # ◇ (open diamond — website)
+ICON_GH       = "\u25c9"  # ◉ (circled dot — GitHub)
 ICON_LI       = "\u25aa in"  #  in  (LinkedIn)
+ICON_MEDIUM   = "\u25aa M"   # ▪ M (Medium — matches ▪ in LinkedIn pattern)
 
 
 def _contact_item(raw):
@@ -82,7 +84,7 @@ def _contact_item(raw):
     if not item:
         return None
     # Email
-    if re.match(r'^[^@]+@[^@]+\.[^@]+$', item):
+    if re.match(r'^[^@/\s]+@[^@]+\.[^@]+$', item):
         return (ICON_EMAIL, item, f"mailto:{item}")
     # Phone
     if re.match(r'^\+?[\d][\d\s\-\.\(\)]{5,}$', item):
@@ -97,6 +99,11 @@ def _contact_item(raw):
         slug = item.rstrip('/').split('/')[-1]
         url  = item if item.startswith('http') else f"https://{item}"
         return (ICON_LI, f"li/{slug}", url)
+    # Medium
+    if 'medium.com' in item:
+        slug = item.rstrip('/').split('medium.com/')[-1]
+        url = item if item.startswith('http') else f"https://{item}"
+        return (ICON_MEDIUM, f"medium/{slug}", url)
     # Generic domain/URL  →  strip protocol, show bare domain
     if re.match(r'^(https?://)?(www\.)?[\w\-]+\.[a-z]{2,}', item):
         display = re.sub(r'^https?://', '', item).rstrip('/')
@@ -110,7 +117,7 @@ def _contact_fragment(icon, display, href):
     """Reportlab XML fragment for one contact item."""
     label = f"{icon}\u202f{display}"  # narrow no-break space after icon
     if href:
-        return f'<a href="{href}" color="#1a5276">{label}</a>'
+        return f'<a href="{href}" color="#4F46E5">{label}</a>'
     return label
 
 
@@ -141,6 +148,30 @@ def parse_contact_lines(lines, start):
     return items, i
 
 
+# ── headings.tsv icon map ────────────────────────────────────────────────────
+
+def _load_headings():
+    """Load data/headings.tsv → {lowercase_label: icon_char}."""
+    for base in [os.path.dirname(os.path.abspath(__file__)), os.getcwd()]:
+        p = os.path.join(base, 'data', 'headings.tsv')
+        if os.path.exists(p):
+            result = {}
+            with open(p, encoding='utf-8') as f:
+                reader = csv.DictReader(f, delimiter='\t')
+                for row in reader:
+                    icon = row.get('icon', '').strip()
+                    if not icon or icon == '—':
+                        continue
+                    for col in ('es', 'en'):
+                        label = row.get(col, '').strip()
+                        if label and label != '—':
+                            result[label.lower()] = icon
+            return result
+    return {}
+
+_HEADINGS = _load_headings()
+
+
 # ── inline markdown ──────────────────────────────────────────────────────────
 
 def _escape(text):
@@ -157,33 +188,20 @@ def inline_fmt(text, font=None):
     return text
 
 
-# ── skills compact table ─────────────────────────────────────────────────────
+# ── skills inline (no columns) ───────────────────────────────────────────────
 
-def build_skills_table(rows, styles):
-    """rows = list of (label_str, values_str) from Markdown table."""
+def build_skills_inline(rows, styles):
+    """rows = list of (label_str, values_str). Full-width paragraphs, no table."""
     if not rows:
         return []
-    # Build 2-col compact table: label | comma-separated values
-    W_label = 3.2 * cm
-    W_value = W - 2 * 1.4 * cm - W_label  # available width minus margins
-    data = []
+    flowables = []
     for label, value in rows:
-        data.append([
-            Paragraph(inline_fmt(label.strip()), styles["skill_l"]),
-            Paragraph(inline_fmt(value.strip()), styles["skill_v"]),
-        ])
-    t = Table(data, colWidths=[W_label, W_value], hAlign='LEFT')
-    t.setStyle(TableStyle([
-        ('VALIGN',       (0, 0), (-1, -1), 'TOP'),
-        ('LEFTPADDING',  (0, 0), (-1, -1), 2),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 4),
-        ('TOPPADDING',   (0, 0), (-1, -1), 2),
-        ('BOTTOMPADDING',(0, 0), (-1, -1), 2),
-        ('ROWBACKGROUNDS', (0, 0), (-1, -1),
-         [colors.HexColor("#f4f7fb"), colors.white]),
-        ('LINEBELOW', (0, 0), (-1, -2), 0.2, colors.HexColor("#e0e0e0")),
-    ]))
-    return [t, Spacer(1, 3)]
+        label_clean = re.sub(r'\*\*(.+?)\*\*', r'\1', label.strip()).rstrip(':')
+        text = (f'<font color="#7C3AED"><b>{_escape(label_clean)}:</b></font>'
+                f'\u2002{inline_fmt(value.strip())}')
+        flowables.append(Paragraph(text, styles["skill_row"]))
+    flowables.append(Spacer(1, 2))
+    return flowables
 
 
 # ── main renderer ─────────────────────────────────────────────────────────────
@@ -200,7 +218,7 @@ def md_to_flowables(md_text, styles, skip_sections=None):
     def flush_skills():
         nonlocal skill_table_rows, in_skill_table
         if skill_table_rows:
-            flowables.extend(build_skills_table(skill_table_rows, styles))
+            flowables.extend(build_skills_inline(skill_table_rows, styles))
         skill_table_rows = []
         in_skill_table = False
 
@@ -250,9 +268,11 @@ def md_to_flowables(md_text, styles, skip_sections=None):
                 in_skipped = True
             else:
                 in_skipped = False
-                flowables.append(Paragraph(title.upper(), styles["h2"]))
+                icon = _HEADINGS.get(title.lower(), '')
+                prefix = f"{icon}\u2009" if icon else ''  # thin space after icon
+                flowables.append(Paragraph(f"{prefix}{title.upper()}", styles["h2"]))
                 flowables.append(HRFlowable(width="100%", thickness=0.8,
-                                            color=colors.HexColor("#1a5276"),
+                                            color=colors.HexColor("#F43F5E"),
                                             spaceAfter=2, spaceBefore=0))
             i += 1
             continue
@@ -306,7 +326,22 @@ def md_to_flowables(md_text, styles, skip_sections=None):
     return flowables
 
 
-# ── page-count helper ─────────────────────────────────────────────────────────
+# ── page border ──────────────────────────────────────────────────────────────────────
+
+_FRAME_COLOR = colors.HexColor("#312e81")  # dark indigo
+
+
+def _draw_border(canvas, doc):
+    """Draw a decorative dark-indigo frame around each page."""
+    canvas.saveState()
+    canvas.setFillColor(_FRAME_COLOR)
+    canvas.rect(0, 0, W, H, fill=1, stroke=0)
+    canvas.setFillColor(colors.white)
+    canvas.rect(8, 8, W - 16, H - 16, fill=1, stroke=0)
+    canvas.restoreState()
+
+
+# ── page-count helper ────────────────────────────────────────────────────────────────
 
 class _PageCounter:
     def __init__(self):
@@ -318,7 +353,7 @@ class _PageCounter:
     onFirstPage = onLaterPages = lambda self, c, d: None
 
 
-def _render(pdf_path, flowables, margin, base_size):
+def _render(pdf_path, flowables, margin, base_size, border=True):
     from io import BytesIO
     buf = BytesIO()
     doc = SimpleDocTemplate(
@@ -326,7 +361,8 @@ def _render(pdf_path, flowables, margin, base_size):
         leftMargin=margin, rightMargin=margin,
         topMargin=margin * 0.9, bottomMargin=margin * 0.8,
     )
-    doc.build(flowables)
+    cb = _draw_border if border else (lambda c, d: None)
+    doc.build(flowables, onFirstPage=cb, onLaterPages=cb)
     # 1-page PDF: 1x /Type /Pages + 1x /Type /Page = 2 total occurrences
     pages = buf.getvalue().count(b'/Type /Page')
     if pages <= 2:
@@ -336,7 +372,7 @@ def _render(pdf_path, flowables, margin, base_size):
     return False
 
 
-def convert(md_path, pdf_path, skip_sections=None):
+def convert(md_path, pdf_path, skip_sections=None, border=True):
     with open(md_path, encoding="utf-8") as f:
         md_text = f.read()
 
@@ -344,7 +380,7 @@ def convert(md_path, pdf_path, skip_sections=None):
     for base_size, margin_cm in [(8.8, 1.4), (8.3, 1.2), (7.8, 1.0), (7.3, 0.9)]:
         styles = build_styles(base_size)
         flowables = md_to_flowables(md_text, styles, skip_sections)
-        if _render(pdf_path, flowables, margin_cm * cm, base_size):
+        if _render(pdf_path, flowables, margin_cm * cm, base_size, border):
             print(f"  OK  {pdf_path}  (size={base_size}pt, margin={margin_cm}cm)")
             return
 
@@ -356,7 +392,8 @@ def convert(md_path, pdf_path, skip_sections=None):
         leftMargin=0.9*cm, rightMargin=0.9*cm,
         topMargin=0.8*cm, bottomMargin=0.7*cm,
     )
-    doc.build(flowables)
+    cb = _draw_border if border else (lambda c, d: None)
+    doc.build(flowables, onFirstPage=cb, onLaterPages=cb)
     print(f"  WARN (overflow) {pdf_path}")
 
 
@@ -366,12 +403,15 @@ if __name__ == "__main__":
     parser.add_argument('folder', nargs='?', default='.')
     parser.add_argument('--skip-sections', default='',
                         help='Comma-separated section titles to omit, e.g. Idiomas,Resumen')
+    parser.add_argument('--no-border', action='store_true',
+                        help='Disable the decorative indigo page border frame')
     args = parser.parse_args()
 
     skip = [s for s in args.skip_sections.split(',') if s]
+    border = not args.no_border
     folder = args.folder
     for fname in sorted(os.listdir(folder)):
         if fname.endswith('.md'):
             src = os.path.join(folder, fname)
             dst = os.path.join(folder, fname.replace('.md', '.pdf'))
-            convert(src, dst, skip)
+            convert(src, dst, skip, border=border)

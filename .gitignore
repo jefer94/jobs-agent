@@ -4,8 +4,9 @@
 # Generated output
 generated-cvs/
 
-# Data files
+# Data files (runtime state — keep config files)
 data/
+!data/headings.tsv
 
 # Sensitive docs
 docs/
@@ -23,4 +24,5 @@ node_modules/
 
 # Misc
 .env
+!.env.example
 *.log

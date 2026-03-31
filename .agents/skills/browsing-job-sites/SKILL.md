@@ -75,18 +75,49 @@ Use the **Playwright MCP tools** (`mcp4_browser_*`) — do NOT write Python Play
    c. If Spanish + relevant: apply (fill form, click submit)
    d. mcp4_browser_tabs action=close current offer tab (if opened in new tab)
    e. Wait 3-5s before next offer
-6. mcp4_browser_evaluate → save session cookies to .sessions/{portal}.json
+6. mcp4_browser_evaluate → extract cookies, call save_session(portal, cookies) via sessions.py
 ```
 
-Save each portal's session to `.sessions/{portal}.json` after login to skip re-login on next run.
+Sessions are stored **encrypted** in `.sessions/{portal}.enc` using Fernet (AES-128-CBC + HMAC).
+Plain `.sessions/*.json` files must never be written — always use `sessions.py`.
+
+## Session Encryption
+
+Session cookies are encrypted at rest using **Fernet** (symmetric AES-128-CBC + HMAC-SHA256).
+
+### Setup (first run)
+```bash
+python3 sessions.py init    # generates SESSION_KEY in .env if missing
+python3 sessions.py check   # verify key is valid
+```
+
+### Programmatic usage
+```python
+from sessions import ensure_key, save_session, load_session
+
+ensure_key()                          # call once at startup
+cookies = load_session('linkedin')    # returns list[dict] or None
+save_session('linkedin', cookies)     # encrypts → .sessions/linkedin.enc
+```
+
+### File layout
+- `.env` — contains `SESSION_KEY=<fernet-key>` (gitignored)
+- `.env.example` — template showing required vars (tracked in git)
+- `.sessions/*.enc` — encrypted cookie files (gitignored)
+- **Never** write plain `.sessions/*.json` — always use `save_session()`
+
+### Re-encrypt existing plain files
+```bash
+python3 sessions.py encrypt-all   # converts *.json → *.enc, removes plain files
+```
 
 ## Credentials
 
-**Never read credentials from `.env` or any file** — the AI could read and leak them.
+**Passwords are never read from files** — the AI could read and leak them.
 
 At startup, **ask the user in chat** for each site's password before opening any tabs. Passwords live only in the conversation context — never write them to a file or log them.
 
-Prompt sequence (only ask for sites whose `.sessions/{portal}.json` does not exist or is expired):
+Prompt sequence (only ask for sites whose `.sessions/{portal}.enc` does not exist or fails to decrypt):
 ```
 "Para comenzar necesito tus contraseñas. Escríbelas una por una:"
 → Trabajando.cl password:
@@ -97,8 +128,8 @@ Prompt sequence (only ask for sites whose `.sessions/{portal}.json` does not exi
 ```
 
 - **LinkedIn and Google:** use OAuth sign-in with `jdefreitaspinto@gmail.com` — no password prompt needed
-- Session cookies saved to `.sessions/` skip re-login until the session expires
-- If a saved session is still valid, skip the prompt for that portal
+- Valid `.sessions/{portal}.enc` files skip re-login until the session expires
+- If `load_session(portal)` returns `None`, the session is missing/expired — prompt for login
 
 ## References
 

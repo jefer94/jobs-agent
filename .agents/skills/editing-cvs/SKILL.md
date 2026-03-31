@@ -35,10 +35,36 @@ Task Progress:
 ## Tailoring Rules
 
 - Keep all content truthful — only reorder and emphasize, never invent experience
-- Always write in Spanish (formal register, tuteo avoided)
 - Match keywords from the job description verbatim where accurate
-- Keep CV to 1–2 pages maximum
+- Keep CV to 1 page maximum (use `--skip-sections` if needed)
 - Include título profesional when the offer requires it (attach `docs/titulo.pdf`)
+
+### Language — match the offer
+
+- Offer in Spanish → use the `es` column from `data/headings.tsv` for ALL section titles
+- Offer in English → use the `en` column
+- Never mix languages within a single CV (sections, bullets, dates must all be in one language)
+- Write body text in the same language as the offer; formal register always
+
+### Section separation — no mixing experience with projects
+
+| Section | What belongs here |
+|---------|------------------|
+| Experiencia Profesional | Paid roles at a company, with start/end dates and company name |
+| Proyectos Personales | Open-source, side projects, personal contributions — NOT paid work |
+
+**Rule:** A role at a real company (4Geeks, Capy.town…) goes ONLY in Experiencia.  
+**Rule:** An open-source project (Spec Guard, Agent Teams Lite…) goes ONLY in Proyectos — unless it was a formal work deliverable billed to a client.
+
+### No contradictory bullets
+
+If a project is already described under a company experience entry, **do not** create a separate
+personal project entry for it. Pick one location:
+
+- Was it primarily a paid work deliverable? → under the company experience only
+- Was it an independent side project that you also used at work? → under Proyectos only, with a note
+
+Reusing the same bullets in two places sends a confusing signal to the recruiter.
 
 ## Extract PDF Text
 
@@ -69,15 +95,33 @@ uv run --with reportlab md_to_pdf.py generated-cvs/
 
 # Drop optional sections to save space (e.g., Idiomas, Resumen)
 uv run --with reportlab md_to_pdf.py generated-cvs/ --skip-sections "Idiomas,Resumen"
+
+# Disable the decorative border frame (default: on)
+uv run --with reportlab md_to_pdf.py generated-cvs/ --no-border
 ```
 
 **Heading format** (the converter parses these lines after the H1 name):
 - Items separated by `·` (U+00B7)
 - URLs are auto-detected and shown with icons — never write full `https://` URLs
+- **Phone: always include country code** — write `+56951451665` (never `951451665`)
 - Blog/website: write bare domain only (`jefer94.dev`)
-- GitHub: write `github.com/jefer94` (auto-shortened to `github/jefer94` with ⊙ icon)
+- GitHub: write `github.com/jefer94` (auto-shortened to `github/jefer94` with ◉ icon)
 - LinkedIn: write `linkedin.com/in/jefer94` (auto-shortened to `li/jefer94`)
+- Medium: write `medium.com/@jefer.dfp` (auto-shortened to `medium/@jefer.dfp` with ▪ M icon)
+
+Example contact block:
+```
+Santiago, Chile · +56951451665 · jdefreitaspinto@gmail.com
+github.com/jefer94 · medium.com/@jefer.dfp · jefer94.dev
+```
+
+**Section titles** — always use canonical labels from `data/headings.tsv`:
+- Spanish CV → `Experiencia Profesional`, `Habilidades Técnicas`, `Proyectos Personales`, `Educación`
+- English CV → `Professional Experience`, `Technical Skills`, `Personal Projects`, `Education`
+- The PDF converter auto-maps these to icons and colors
 
 ## References
 
 - `references/cv-guidelines.md` — CV structure, section order, and Spanish writing guidelines
+- `references/headings-guide.md` — icon choices, online Unicode browser, how to add custom icons
+- `data/headings.tsv` — canonical section keys, ES/EN labels, and icon characters

@@ -25,7 +25,12 @@ This is a single-user automation bot (not a product). It:
 docs/               — Base CV (Espanol.pdf) and title certificate (titulo.pdf)
 generated-cvs/      — Tailored CVs per application ({empresa}-{cargo}-{date}.md)
 data/               — applications.json · qa-log.json · metrics.json · qa-answers.tsv
-.sessions/          — Saved browser session cookies per portal (gitignored)
+data/headings.tsv   — Canonical CV section labels (ES/EN) and icon chars (version-controlled)
+.sessions/          — Encrypted session cookies per portal (.enc files, gitignored)
+.env                — SESSION_KEY for cookie encryption (gitignored — never commit)
+.env.example        — Template showing required env vars (tracked in git)
+sessions.py         — Encrypt/decrypt session cookies; generates SESSION_KEY on first run
+md_to_pdf.py        — Markdown → PDF converter (indigo/violet/rose palette, dark-indigo border frame, 1-page enforcement)
 ```
 
 ---
@@ -33,14 +38,22 @@ data/               — applications.json · qa-log.json · metrics.json · qa-a
 ## Setup
 
 ```bash
-pip install playwright pdfplumber pypdf langdetect reportlab
+pip install playwright pdfplumber pypdf langdetect reportlab cryptography
 playwright install chromium
 ```
+
+**Session encryption setup (first run only):**
+```bash
+python3 sessions.py init    # generates SESSION_KEY and writes to .env
+python3 sessions.py check   # verify the key is valid
+```
+
+Session cookies are encrypted at rest using **Fernet** (AES-128-CBC + HMAC-SHA256). The key lives in `.env` (gitignored). Encrypted files are stored as `.sessions/{portal}.enc`. Plain `.sessions/*.json` files must never exist — always use `sessions.py`.
 
 **No credentials file.** At startup the bot prompts for site passwords interactively via `getpass` — passwords live in memory only for the session and are never written to disk.
 
 - **LinkedIn + Google Jobs:** sign in via Google OAuth as `jdefreitaspinto@gmail.com` — no password prompt
-- **All other sites:** asked in chat once at startup; skipped if `.sessions/{portal}.json` is still valid
+- **All other sites:** asked in chat once at startup; skipped if `.sessions/{portal}.enc` decrypts successfully
 
 Initialize data folder on first run — the `tracking-applications` skill includes a bootstrap script.
 
@@ -56,9 +69,10 @@ Every job application follows this sequence:
 3. browsing-job-sites  →  search all portals simultaneously for Spanish offers
 4. tracking-applications  →  check for duplicates before proceeding on each offer
 5. editing-cvs + pdf  →  extract base CV, tailor for the specific offer
-6. browsing-job-sites  →  open offer page (max 1 per portal), apply, close page
-7. answering-forms      →  for each form question: search Engram, use TSV answer or generate new one
-8. tracking-applications  →  log the application and any form Q&A
+6. verify-cv           →  screenshot PDF with pdftoppm + read_file, fix any rendering issues
+7. browsing-job-sites  →  open offer page (max 1 per portal), apply, close page
+8. answering-forms      →  for each form question: search Engram, use TSV answer or generate new one
+9. tracking-applications  →  log the application and any form Q&A
 ```
 
 ---
@@ -68,12 +82,27 @@ Every job application follows this sequence:
 - **Spanish only** — skip any offer whose description contains English paragraphs
 - **No duplicates** — always query `data/applications.json` by URL before applying
 - **No invented experience** — CV tailoring only reorders and emphasizes truthfully
-- **Headed browser** — always `headless=False` so the user can observe and intervene
+- **Headed browser** — **ALWAYS** `headless=False`. NEVER run headless. The user must be able to observe every action and intervene at any time.
 - **CAPTCHA** — stop, surface the page to the user, and wait for manual resolution
 - **Credentials** — prompted interactively at startup via `getpass`; never read from files, never hardcoded; AI must not store or log passwords
 - **OAuth** — LinkedIn and Google sign-in use Google OAuth with `jdefreitaspinto@gmail.com`
 - **Parallel portals** — one browser context per portal, all running simultaneously
 - **1 offer page per portal** — open, apply/skip, close before opening the next — reduces bot detection risk
+
+### CV Content Rules
+
+- **Language matching** — CV language must match the offer language. Spanish offer → use `es` column from `data/headings.tsv` for ALL section titles and write body text in Spanish. Never mix languages.
+- **Section separation** — `Experiencia Profesional` = paid roles at real companies only. `Proyectos Personales` = open-source / side projects only. **Never put the same item in both sections.**
+- **No contradictory bullets** — if a project is described under a company experience entry, do not also create a standalone personal project entry for it. One location per item, chosen by primary nature (paid vs. independent).
+- **Canonical section titles** — always use labels from `data/headings.tsv`; the PDF converter auto-maps them to icons and accent colors.
+- **1-page target** — enforce with `--skip-sections "Idiomas,Resumen"` if needed.
+- **Phone: always include country code** — write `+56951451665` never bare `951451665`.
+- **Contact fields** — standard contact block:
+  ```
+  Santiago, Chile · +56951451665 · jdefreitaspinto@gmail.com
+  github.com/jefer94 · medium.com/@jefer.dfp · jefer94.dev
+  ```
+  Medium auto-renders as `▪ M medium/@jefer.dfp` via the converter.
 
 ---
 
@@ -101,6 +130,8 @@ Every job application follows this sequence:
 **Source:** custom (`.agents/skills/editing-cvs/`)
 
 **Activate when:** a job offer needs a tailored CV, or user asks to generate or adapt the CV for a specific role.
+
+**Preferred pairing:** Use `editing-cvs` to write the Markdown CV, then `cv-builder` if a YAML/rendercv PDF is needed. For quick one-shot PDFs, `editing-cvs` alone (`.md` → `md_to_pdf.py`) is sufficient.
 
 **Output:** `generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.md`. Uses the `pdf` skill to extract text from `docs/Espanol.pdf`. See `references/cv-guidelines.md` for Chilean CV structure and keyword-matching strategy.
 
@@ -131,7 +162,7 @@ Every job application follows this sequence:
 
 **Activate when:** immediately after any CV PDF is generated (editing-cvs, cv-builder, or pdf skill). Always run before logging an application.
 
-**How it works:** Opens the PDF via `mcp4_browser_navigate file:///<path>`, screenshots each page with `mcp4_browser_take_screenshot`, and visually inspects for: text overlap, clipping, multi-page overflow, missing sections, Unicode encoding boxes. Applies targeted fixes and re-renders if issues are found.
+**How it works:** Converts each PDF page to PNG with `pdftoppm -r 120 -png`, then inspects with `read_file` for: text overlap, clipping, multi-page overflow, missing sections, Unicode encoding boxes. Applies targeted fixes and re-renders if issues are found.
 
 **Reports:** `✅ PASS` / `⚠️ FIXED` / `❌ FAIL` per CV file.
 
