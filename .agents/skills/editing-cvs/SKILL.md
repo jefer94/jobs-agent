@@ -29,7 +29,8 @@ Task Progress:
 - [ ] 4. Reorder/emphasize relevant sections to match the offer
 - [ ] 5. Adjust the summary/objective paragraph for the specific role
 - [ ] 6. Save as generated-cvs/{company}-{role}-{date}.md (and/or .pdf)
-- [ ] 7. Log the generated CV path in the application tracker
+- [ ] 7. Convert to PDF and inspect for excessive white space — if detected, add `## Perfil Profesional` section above `## Experiencia Profesional`, re-convert, and re-inspect
+- [ ] 8. Log the generated CV path in the application tracker
 ```
 
 ## Tailoring Rules
@@ -38,6 +39,12 @@ Task Progress:
 - Match keywords from the job description verbatim where accurate
 - Keep CV to 1 page maximum (use `--skip-sections` if needed)
 - Include título profesional when the offer requires it (attach `docs/titulo.pdf`)
+
+### Perfil Profesional (white-space recovery)
+
+- After converting and inspecting the PDF, if there is excessive white space (bottom half of page visibly empty), add a `## Perfil Profesional` section placed **immediately above** `## Experiencia Profesional`
+- Write 3–5 sentences tailored to the target role: years of experience, core technologies, and value proposition
+- Do NOT add this section if the page is already full or close to full; its sole purpose is to fill visible gaps
 
 ### Language — match the offer
 

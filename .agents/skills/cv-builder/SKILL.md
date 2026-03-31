@@ -84,7 +84,7 @@ Task Progress:
 - [ ] 6. Create YAML with rendercv structure
 - [ ] 7. Save as generated-cvs/{empresa}-{cargo}-{YYYY-MM-DD}.yaml
 - [ ] 8. Render to PDF: rendercv render cv.yaml
-- [ ] 9. Run verify-cv to check the generated PDF
+- [ ] 9. Run verify-cv to check the generated PDF — if excessive white space is detected, add a `perfil_profesional` section above `experience`, re-render, and re-verify
 - [ ] 10. Log the generated CV path in the application tracker
 ```
 
@@ -102,6 +102,12 @@ Task Progress:
 - If experience is extensive (>2 roles with detailed bullets), omit summary to save space
 - For senior roles (Solution Architect, Cloud Architect, Tech Lead), summary adds less value than expanded experience
 - Junior roles (Frontend Junior, Trainee) benefit from summary to show motivation
+
+**Perfil Profesional (white-space recovery):**
+- After running `verify-cv`, if the generated PDF has excessive white space (bottom half of page visibly empty), add a `perfil_profesional` section placed **immediately above** `experience` in the YAML
+- Write 3–5 sentences tailored to the target role: highlight years of experience, core technologies, and value proposition
+- This section uses a `BulletedEntry` or `TextEntry` in rendercv — use a single paragraph string under the section key
+- Do NOT add this section if the page is already full or close to full; its sole purpose is to fill visible gaps
 
 **Skills vs Education Priority:**
 - **Junior roles** (Frontend Junior, Dev Trainee, Junior Data Scientist): Prioritize EDUCATION — place above skills, include relevant coursework
@@ -168,6 +174,9 @@ cv:
   sections:
     summary:
       - "Tailored summary paragraph for the specific role..."
+
+    perfil_profesional:  # Add ONLY if verify-cv detects too much white space
+      - "Profesional con X años de experiencia en [área]. Especializado en [tecnologías clave]. [Propuesta de valor orientada al rol objetivo]."
 
     experience:
       - company: Capy.town
