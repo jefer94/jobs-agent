@@ -20,6 +20,11 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "cfbc539377088ca7e44a813b30c306327385bbd973cd7a721e1743f60837dd62"
+    },
+    "rendercv": {
+      "source": "rendercv/rendercv-skill",
+      "sourceType": "github",
+      "computedHash": "67dc790a46f6a5f44fa7a00ffc38096288064913731fda597d090236b70afdfc"
     }
   }
 }

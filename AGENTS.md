@@ -100,13 +100,17 @@ Every job application follows this sequence:
 - **No contradictory bullets** — if a project is described under a company experience entry, do not also create a standalone personal project entry for it. One location per item, chosen by primary nature (paid vs. independent).
 - **Canonical section titles** — always use labels from `data/headings.tsv`; the PDF converter auto-maps them to icons and accent colors.
 - **1-page target** — enforce with `--skip-sections "Idiomas,Resumen"` if needed.
-- **Phone: always include country code** — write `+56951451665` never bare `951451665`.
+- **Phone: always include country code with spaces** — write `+56951451665` never bare `951451665`.
+- **Social networks** — include LinkedIn, GitHub, Medium with icons: `jefer94`, `@jefer.dfp`
+- **No columns in skills** — use plain list format, each category on its own line
+- **Education format** — flat structure: institution, area, degree inline (no nested highlights)
+- **Frame** — add indigo border frame around CV using Ghostscript post-processing
+- **Name size** — proportional (18-22pt), not oversized
 - **Contact fields** — standard contact block:
   ```
-  Santiago, Chile · +56951451665 · jdefreitaspinto@gmail.com
-  github.com/jefer94 · medium.com/@jefer.dfp · jefer94.dev
+  [Icon] Santiago · [Icon] +56951451665 · [Icon] jdefreitaspinto@gmail.com
+  [linkedin Icon] jefer94 · [github Icon] jefer94 · [medium Icon] jefer.dfp
   ```
-  Medium auto-renders as `▪ M medium/@jefer.dfp` via the converter.
 
 ---
 

@@ -1,0 +1,108 @@
+# Custom sb2nov-colorized theme for rendercv
+# Place this in ~/.local/share/rendercv/themes/ or use with --theme-path
+
+# Color palette: indigo, violet, cyan, rose
+colors:
+  primary: "#4f46e5"      # indigo-600
+  secondary: "#7c3aed"    # violet-600
+  accent: "#0891b2"       # cyan-600
+  highlight: "#e11d48"  # rose-600
+  text: "#1f2937"         # gray-800
+  muted: "#9ca3af"        # gray-400
+  background: "#ffffff"
+
+# Typography
+typography:
+  name:
+    font: "Playfair Display"  # Creative serif font
+    size: 20pt                # Reduced from 24pt
+    weight: bold
+    color: "#4f46e5"
+
+  section:
+    font: "Inter"
+    size: 11pt
+    weight: bold
+    color: "#e11d48"
+    underline: true
+    underline-color: "#4f46e5"
+
+  body:
+    font: "Inter"
+    size: 9pt
+    color: "#1f2937"
+
+  date:
+    font: "Inter"
+    size: 9pt
+    color: "#0891b2"
+
+  company:
+    font: "Inter"
+    size: 10pt
+    weight: bold
+    color: "#4f46e5"
+
+  position:
+    font: "Inter"
+    size: 9pt
+    color: "#7c3aed"
+
+# Layout settings - single column
+layout:
+  columns: 1
+  section_spacing: 0.8em
+  entry_spacing: 0.6em
+
+# Page settings with frame
+page:
+  paper: a4
+  margin:
+    top: 1.2cm
+    bottom: 1.2cm
+    left: 1.5cm
+    right: 1.5cm
+  frame:
+    enabled: true
+    stroke: 1.5pt
+    color: "#4f46e5"
+    radius: 0pt
+
+# Icons for contact (FontAwesome or similar)
+# These map to the contact fields
+icons:
+  email: "\\faEnvelope"
+  phone: "\\faPhone"
+  location: "\\faMapMarker"
+  linkedin: "\\faLinkedin"
+  github: "\\faGithub"
+  medium: "\\faMedium"      # Added Medium icon
+  website: "\\faGlobe"
+
+# Use short identifiers instead of full URLs
+contact-format:
+  email: short        # jdefreitaspinto@gmail.com
+  phone: short        # +56951451665
+  linkedin: username    # jefer94
+  github: username    # jefer94
+  medium: username    # @jefer.dfp
+  website: domain     # jefer94.dev
+
+# Experience entry format - compact date + location on same line
+experience-format:
+  date-location-separator: " | "
+  date-format: "MM/YYYY"
+  show-location-inline: true
+
+# Education format
+education-format:
+  inline: true          # Institution + degree on same line
+  show-dates: true
+  date-format: "YYYY"
+
+# Profile section - conditional display
+profile:
+  # Include profile only if content fits comfortably on 1 page
+  # If experience is extensive, omit to save space
+  default: auto         # 'auto', 'always', 'never'
+  max-content-length: 800   # Approximate characters

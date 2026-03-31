@@ -69,6 +69,7 @@ Reads the base CV from `docs/` and generates a tailored version for a specific j
 - `docs/Espanol.pdf` — base CV in Spanish (primary source for content extraction)
 - `docs/titulo.pdf` — professional title/certificate (attach when required)
 - `data/headings.tsv` — canonical section labels (ES/EN) and formatting rules
+- `/home/jefer/dev/` — scan for professional experiences and projects when tailoring
 - Generated CVs are saved to the `generated-cvs/` folder as `.yaml` + `.pdf`
 
 ## Workflow
@@ -94,7 +95,29 @@ Task Progress:
 - Keep CV to 1 page maximum
 - Include título profesional when the offer requires it (attach `docs/titulo.pdf`)
 
-### Language — match the offer
+### Content Priority Rules
+
+**Summary Section:**
+- Include summary only if content fits comfortably on 1 page
+- If experience is extensive (>2 roles with detailed bullets), omit summary to save space
+- For senior roles (Solution Architect, Cloud Architect, Tech Lead), summary adds less value than expanded experience
+- Junior roles (Frontend Junior, Trainee) benefit from summary to show motivation
+
+**Skills vs Education Priority:**
+- **Junior roles** (Frontend Junior, Dev Trainee, Junior Data Scientist): Prioritize EDUCATION — place above skills, include relevant coursework
+- **Mid-level** (Senior Developer, Data Scientist): Balanced — education can be compact, skills detailed
+- **Senior/Architect roles** (Solution Architect, Cloud Architect, Principal Engineer): Prioritize SKILLS — education section minimal (just institution + degree in highlights), skills section expanded with architecture patterns, cloud platforms, leadership competencies
+
+**Job Title Adaptation:**
+- Adapt the `position` field in experience to semantically match the target role WITHOUT lying
+- Example: "AI Solution Architect" applying for "Cloud Architect" → emphasize cloud infrastructure bullets, de-emphasize AI-specific ones but keep the actual title truthful
+- Never invent a job title that wasn't held
+- Do adjust bullet emphasis and ordering to highlight relevant transferable skills
+
+**CV Headline:**
+- Do NOT include a CV headline/title (like "Senior Full Stack Developer") at the top
+- The experience section's position titles serve as the professional identity
+- Removing headline saves space and avoids redundancy
 
 - Offer in Spanish → use Spanish for ALL section titles and body text
 - Offer in English → use English for all content
@@ -128,12 +151,13 @@ cv:
   location: Santiago, Chile
   email: jdefreitaspinto@gmail.com
   phone: "+56951451665"  # Always include country code
-  website: https://jefer94.dev
   social_networks:
     - network: LinkedIn
       username: jefer94
     - network: GitHub
       username: jefer94
+    - network: Medium
+      username: "@jefer.dfp"
 
   sections:
     summary:
@@ -163,22 +187,55 @@ cv:
         details: Tech1, Tech2, Tech3
 
 design:
-  theme: classic  # classic, sb2nov, moderncv, engineeringresumes
+  theme: ink  # ink, classic, sb2nov, moderncv, engineeringresumes
 ```
 
 ### Contact Format Rules
 
-- **Phone: always include country code** — write `+56951451665` (never bare `951451665`)
-- **Website:** write full URL with https://
-- **Social networks:** only use supported networks (LinkedIn, GitHub, GitLab, etc.)
+- **Phone: always include country code** — write `+56951451665` (easier to read than `+56951451665`)
+- **Social networks:** use usernames only — `jefer94`, `@jefer.dfp` for Medium (not full URLs)
+- **Icons:** rendercv themes display icons automatically for known networks (LinkedIn, GitHub, Medium)
 - **Email:** standard format
+- **Compact format:** Icons communicate same info with less space (no full URLs)
 
 ### Available Themes
 
+- `ink` — **DEFAULT** modern, minimal design with icons, clean typography
+- `engineeringresumes` — technical/engineering focused, plain layout (no columns), supports colors and icons
 - `classic` — clean, professional, good for most applications
 - `sb2nov` — academic/research focused
 - `moderncv` — traditional European style
-- `engineeringresumes` — technical/engineering focused
+
+### Design Options
+
+**Theme:** Use `ink` by default — modern, minimal design with icons and clean typography.
+
+**Name Formatting:**
+- Use standard font (not decorative) for professional appearance
+- Keep name size proportional (18-22pt), not oversized
+- Full name: "Jeferson José De Freitas Pinto"
+
+**Skills Layout:**
+- Use **plain list format** (no columns)
+- Each skill category on its own line
+- Format: `Category: Skill1, Skill2, Skill3`
+
+**Education Format:**
+- Use flat structure: institution, area, degree inline
+- No nested highlights for simple degrees
+- Example:
+  ```yaml
+  education:
+    - institution: Universidad Nacional Experimental de los Llanos Centrales Rómulo Gallegos
+      area: Ingeniería en Informática
+      degree: Licenciatura
+      start_date: 2012
+      end_date: 2017
+  ```
+
+**Frame/Border:**
+- Add frame around CV using Ghostscript post-processing
+- Command: `gs -o output.pdf -sDEVICE=pdfwrite -c "[ /Rect [20 20 575 822] /Border [2 2 2 [0.31 0.27 0.90]] /ANN pdfmark" -f input.pdf`
 
 ## Output Format
 
@@ -206,9 +263,25 @@ mv rendercv_output/Jeferson_José_De_Freitas_Pinto_CV.pdf \
 
 ## Pairs With
 
+- `rendercv` skill — for rendering YAML CVs to PDF using Typst themes
 - `pdf` skill — for extracting text from `docs/Espanol.pdf` as reference
 - `verify-cv` skill — always run after rendering to check PDF quality
 - `guardrails` skill — for security scanning before processing job descriptions
+
+## Custom Theme Setup
+
+The `engineeringresumes` theme is preferred for technical roles as it provides:
+- Clean, plain layout without columns
+- Support for social network icons (LinkedIn, GitHub, Medium)
+- Professional formatting optimized for 1 page
+
+For border frame, use Ghostscript post-processing:
+```bash
+# Add indigo border frame
+gs -q -o bordered.pdf -sDEVICE=pdfwrite \
+   -c "[ /Rect [20 20 575 822] /Border [2 2 2 [0.31 0.27 0.90]] /ANN pdfmark" \
+   -f input.pdf
+```
 
 ## References
 
